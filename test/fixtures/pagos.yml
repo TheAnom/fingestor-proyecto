@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  concepto_pago: one
+  estudiante: one
+  usuario: one
+  monto: 1.5
+  fecha: 2025-10-21
+
+two:
+  concepto_pago: two
+  estudiante: two
+  usuario: two
+  monto: 1.5
+  fecha: 2025-10-21

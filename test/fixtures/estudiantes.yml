@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  nombre_completo: MyText
+  telefono: MyText
+  grado: one
+  institucion: MyText
+
+two:
+  nombre_completo: MyText
+  telefono: MyText
+  grado: two
+  institucion: MyText
