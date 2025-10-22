@@ -22,3 +22,23 @@ Things you may want to cover:
 * Deployment instructions
 
 * ...
+
+
+
+["asignacion_cursos",
+ "estudiantes",
+ "permiso_rols",
+ "permisos",
+ "rols",
+ "usuarios",
+ "schema_migrations",
+ "cursos",
+ "ar_internal_metadata",
+ "pagos",
+ "profesors",
+ "grados",
+ "concepto_pagos"]
+
+
+Ver todas las tablas: ActiveRecord::Base.connection.tables
+Ver las columnas de una tabla: NombreDelModelo.column_names
