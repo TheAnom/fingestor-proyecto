@@ -1,6 +1,21 @@
 Rails.application.routes.draw do
-
+  get "dashboard/index"
+  get "dashboard/ingresos"
+  get "dashboard/consultas"
+  get "dashboard/control_usuarios"
+  
   root "home#index"
+
+  # Rutas de login/logout
+  get "/login", to: "sessions#new"
+  post "/login", to: "sessions#create"
+  delete "/logout", to: "sessions#destroy"
+
+  # Dashboard
+  get "/dashboard", to: "dashboard#index"
+  get "/dashboard/ingresos", to: "dashboard#ingresos"
+  get "/dashboard/consultas", to: "dashboard#consultas"
+  get "/dashboard/control_usuarios", to: "dashboard#control_usuarios"
 
   get "home/index"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
