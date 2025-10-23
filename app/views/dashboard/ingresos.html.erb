@@ -56,7 +56,7 @@
     </p>
 
     <p>
-      <%= submit_tag "Guardar Pago", class: "btn btn-primary" %>
+      <%= submit_tag "Guardar Pago", class: "btn btn-primary", id: 'pago-submit' %>
     </p>
   <% end %>
 </div>
@@ -136,6 +136,138 @@
         if (pagoHidden) pagoHidden.value = id;
       });
     });
+
+    // Handlers para botones de modificar/eliminar estudiantes
+    table.querySelectorAll('tbody tr').forEach(function(row) {
+      const editBtn = row.querySelector('.btn-edit');
+      const delBtn = row.querySelector('.btn-delete');
+      const estudianteId = row.dataset.id;
+
+      if (editBtn) {
+        editBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          // Activar modo edición: rellenar formulario y marcar action para PATCH
+          const form = document.getElementById('estudiante-form');
+          if (!form) return;
+          const nombreInput = form.querySelector('input[name="estudiante[nombre_completo]"]');
+          const telefonoInput = form.querySelector('input[name="estudiante[telefono]"]');
+          const gradoSelect = form.querySelector('select[name="estudiante[grado_id]"]');
+          const institucionInput = form.querySelector('input[name="estudiante[institucion]"]');
+
+          nombreInput.value = row.dataset.nombre || '';
+          telefonoInput.value = row.dataset.telefono || '';
+          if (gradoSelect) gradoSelect.value = row.dataset.grado_id || '';
+          institucionInput.value = row.dataset.institucion || '';
+
+          // Add hidden field with id to indicate edit mode
+          let idField = form.querySelector('input[name="estudiante[id]"]');
+          if (!idField) {
+            idField = document.createElement('input');
+            idField.type = 'hidden';
+            idField.name = 'estudiante[id]';
+            form.appendChild(idField);
+          }
+          idField.value = estudianteId;
+
+          // Change submit button text
+          const submitBtn = form.querySelector('input[type="submit"]');
+          if (submitBtn) submitBtn.value = 'Actualizar';
+
+          // Store original form action to restore later if needed
+          form.dataset.originalAction = form.action;
+        });
+      }
+
+      if (delBtn) {
+        delBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          if (!confirm('¿Eliminar este estudiante?')) return;
+          fetch('/estudiantes/' + estudianteId, {
+            method: 'DELETE',
+            headers: { 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content') }
+          }).then(function(res){
+            if (res.ok) {
+              // quitar fila y limpiar formulario si estaba seleccionada
+              // Remove student row
+              row.remove();
+
+              // Remove associated pagos rows from pagos table
+              const pagosTable = document.getElementById('pagos-table');
+              if (pagosTable) {
+                pagosTable.querySelectorAll('tbody tr').forEach(function(prow) {
+                  if (prow.dataset.estudiante_id == estudianteId) prow.remove();
+                });
+              }
+
+              if (window.selectedEstudianteId == estudianteId) {
+                window.selectedEstudianteId = null;
+                document.getElementById('estudiante-seleccionado').textContent = '(ninguno)';
+                document.getElementById('estudiante-form').reset();
+              }
+            } else {
+              return res.json().then(function(json){ throw json; });
+            }
+          }).catch(function(err){
+            alert(err && err.error ? err.error : 'No se pudo eliminar el estudiante');
+          });
+        });
+      }
+    });
+
+    // Interceptar submit del formulario de estudiante para soporte AJAX create/update
+    const estudianteForm = document.getElementById('estudiante-form');
+    if (estudianteForm) {
+      estudianteForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(estudianteForm);
+        const id = formData.get('estudiante[id]');
+        const url = id ? '/estudiantes/' + id : estudianteForm.action;
+        const method = id ? 'PATCH' : 'POST';
+
+        fetch(url, {
+          method: method,
+          headers: { 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content') },
+          body: formData
+        }).then(function(res){
+          if (res.ok) return res.json();
+          return res.json().then(function(err){ throw err; });
+        }).then(function(json){
+          if (json.success) {
+            // Actualizar/añadir fila en la tabla de estudiantes
+            const estudiantesTableBody = document.querySelector('#estudiantes-table tbody');
+            if (id) {
+              // update existing row
+              const row = estudiantesTableBody.querySelector('tr[data-id="' + id + '"]');
+              if (row) {
+                row.dataset.nombre = json.estudiante.nombre_completo;
+                row.dataset.telefono = json.estudiante.telefono || '';
+                row.dataset.grado_id = json.estudiante.grado_id || '';
+                row.dataset.institucion = json.estudiante.institucion || '';
+                row.querySelector('td:nth-child(1)').textContent = json.estudiante.nombre_completo;
+                row.querySelector('td:nth-child(2)').textContent = json.estudiante.telefono || '';
+                  // actualizar nombre del grado si viene en la respuesta
+                  if (json.estudiante.grado_nombre) {
+                    row.querySelector('td:nth-child(3)').textContent = json.estudiante.grado_nombre;
+                  }
+              }
+            } else {
+              // Añadir nueva fila al inicio
+              // Para simplicidad, recargar la página para reflejar nuevos datos
+              window.location.reload();
+            }
+
+            // Reset form to create mode
+            estudianteForm.reset();
+            const idField = estudianteForm.querySelector('input[name="estudiante[id]"]');
+            if (idField) idField.remove();
+            const submitBtn = estudianteForm.querySelector('input[type="submit"]');
+            if (submitBtn) submitBtn.value = 'Guardar';
+          }
+        }).catch(function(err){
+          alert('Error: ' + (err.errors ? err.errors.join(', ') : 'Solicitud fallida'));
+        });
+      });
+    }
   });
 </script>
 
@@ -204,6 +336,152 @@
         if (pagoHidden) pagoHidden.value = estudianteId;
       });
     });
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Handlers para botones de pagos
+    document.querySelectorAll('.btn-edit-pago').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const row = btn.closest('tr');
+        const pagoId = row.dataset.id;
+        const conceptoId = row.dataset.concepto_id;
+        const estudianteId = row.dataset.estudiante_id;
+        const monto = row.dataset.monto;
+
+        // Seleccionar estudiante y rellenar estudiante form
+        const estudiantesTable = document.getElementById('estudiantes-table');
+        if (estudiantesTable) {
+          const target = estudiantesTable.querySelector('tbody tr[data-id="' + estudianteId + '"]');
+          if (target) target.click();
+        }
+
+        // Poner el formulario de pago en modo edición
+        const form = document.querySelector('form[action="/dashboard/guardar_pago"]');
+        if (!form) return;
+        // crear/actualizar hidden pago[id]
+        let pagoIdField = form.querySelector('input[name="pago[id]"]');
+        if (!pagoIdField) {
+          pagoIdField = document.createElement('input');
+          pagoIdField.type = 'hidden';
+          pagoIdField.name = 'pago[id]';
+          form.appendChild(pagoIdField);
+        }
+        pagoIdField.value = pagoId;
+
+        // Set fields concept and monto
+        const conceptoSelect = form.querySelector('select[name="concepto_pago_id"]');
+        const montoInput = form.querySelector('input[name="monto"]');
+        if (conceptoSelect) conceptoSelect.value = conceptoId;
+        if (montoInput) montoInput.value = monto;
+
+        // Change submit label
+        const submitBtn = document.getElementById('pago-submit');
+        if (submitBtn) submitBtn.value = 'Actualizar Pago';
+      });
+    });
+
+    document.querySelectorAll('.btn-delete-pago').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const row = btn.closest('tr');
+        const pagoId = row.dataset.id;
+        if (!confirm('¿Eliminar este pago?')) return;
+        fetch('/pagos/' + pagoId, {
+          method: 'DELETE',
+          headers: { 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content') }
+        }).then(function(res){
+          if (res.ok) {
+            row.remove();
+          } else {
+            return res.json().then(function(json){ throw json; });
+          }
+        }).catch(function(err){
+          alert(err && err.error ? err.error : 'No se pudo eliminar el pago');
+        });
+      });
+    });
+
+    // Interceptar submit del form de pago para soportar crear o actualizar via AJAX
+    const pagoForm = document.querySelector('form[action="/dashboard/guardar_pago"]');
+    if (pagoForm) {
+      pagoForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(pagoForm);
+        const pagoId = formData.get('pago[id]');
+
+        if (pagoId) {
+          // update via PATCH to /pagos/:id
+          fetch('/pagos/' + pagoId, {
+            method: 'PATCH',
+            headers: { 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content') },
+            body: formData
+          }).then(function(res){
+            if (res.ok) return res.json();
+            return res.json().then(function(err){ throw err; });
+          }).then(function(json){
+            if (json.success) {
+              // Update row in pagos table with server-provided names
+              const row = document.querySelector('#pagos-table tbody tr[data-id="' + pagoId + '"]');
+              if (row) {
+                row.dataset.concepto_id = json.pago.concepto_pago_id;
+                row.dataset.monto = json.pago.monto;
+                row.dataset.estudiante_id = json.pago.estudiante_id;
+                row.querySelector('td:nth-child(1)').textContent = json.pago.concepto_pago_nombre || row.querySelector('td:nth-child(1)').textContent;
+                row.querySelector('td:nth-child(2)').textContent = json.pago.estudiante_nombre || row.querySelector('td:nth-child(2)').textContent;
+                row.querySelector('td:nth-child(4)').textContent = json.pago.monto;
+                row.querySelector('td:nth-child(5)').textContent = json.pago.fecha;
+              }
+              // remove pago id hidden and reset submit label
+              const hid = pagoForm.querySelector('input[name="pago[id]"]'); if (hid) hid.remove();
+              const submitBtn = document.getElementById('pago-submit'); if (submitBtn) submitBtn.value = 'Guardar Pago';
+
+              // Clear payment-specific fields (concept and monto) after update
+              const conceptoField = pagoForm.querySelector('select[name="concepto_pago_id"]');
+              const montoField = pagoForm.querySelector('input[name="monto"]');
+              if (conceptoField) conceptoField.value = '';
+              if (montoField) montoField.value = '';
+            }
+          }).catch(function(err){ alert('Error actualizando pago'); });
+        } else {
+          // create via AJAX POST
+          fetch(pagoForm.action, {
+            method: 'POST',
+            headers: { 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content'), 'Accept': 'application/json' },
+            body: formData
+          }).then(function(res){
+            if (res.ok) return res.json();
+            return res.json().then(function(err){ throw err; });
+          }).then(function(json){
+            if (json.success) {
+              // Insert new pago row at top
+              const tbody = document.querySelector('#pagos-table tbody');
+              const tr = document.createElement('tr');
+              tr.dataset.id = json.pago.id;
+              tr.dataset.concepto_id = json.pago.concepto_pago_id;
+              tr.dataset.estudiante_id = json.pago.estudiante_id;
+              tr.dataset.monto = json.pago.monto;
+              tr.innerHTML = '<td>' + (json.pago.concepto_pago_nombre || '') + '</td>' +
+                             '<td>' + (json.pago.estudiante_nombre || '') + '</td>' +
+                             '<td>' + (json.pago.usuario_nombre || '') + '</td>' +
+                             '<td>' + json.pago.monto + '</td>' +
+                             '<td>' + json.pago.fecha + '</td>' +
+                             '<td><button class="btn-edit-pago" type="button">Modificar</button> <button class="btn-delete-pago" type="button">Eliminar</button></td>';
+              tbody.insertBefore(tr, tbody.firstChild);
+
+              // Reattach handlers for new row's buttons
+              tr.querySelector('.btn-edit-pago').addEventListener('click', function(e){ e.stopPropagation(); tr.click(); /* reuse existing handler */ });
+              tr.querySelector('.btn-delete-pago').addEventListener('click', function(e){ e.stopPropagation(); /* will be attached by page-level handler on reload if necessary */ });
+
+              // reset form
+              pagoForm.reset();
+            }
+          }).catch(function(err){ alert('Error creando pago'); });
+        }
+      });
+    }
   });
 </script>
 

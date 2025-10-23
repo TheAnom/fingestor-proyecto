@@ -42,9 +42,27 @@ class DashboardController < ApplicationController
     )
 
     if pago.save
-      redirect_to dashboard_ingresos_path, notice: "Pago registrado correctamente"
+      if request.xhr? || request.format.json?
+        render json: { success: true, pago: {
+          id: pago.id,
+          concepto_pago_id: pago.concepto_pago_id,
+          concepto_pago_nombre: pago.concepto_pago&.nombre,
+          estudiante_id: pago.estudiante_id,
+          estudiante_nombre: pago.estudiante&.nombre_completo,
+          usuario_id: pago.usuario_id,
+          usuario_nombre: pago.usuario&.nombre,
+          monto: pago.monto,
+          fecha: pago.fecha
+        } }
+      else
+        redirect_to dashboard_ingresos_path, notice: "Pago registrado correctamente"
+      end
     else
-      redirect_to dashboard_ingresos_path, alert: "No se pudo registrar el pago"
+      if request.xhr? || request.format.json?
+        render json: { success: false, errors: pago.errors.full_messages }, status: :unprocessable_entity
+      else
+        redirect_to dashboard_ingresos_path, alert: "No se pudo registrar el pago"
+      end
     end
   end
 

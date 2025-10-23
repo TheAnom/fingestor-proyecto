@@ -3,6 +3,8 @@ Rails.application.routes.draw do
   get "dashboard/ingresos"
   post "dashboard/ingresos", to: "dashboard#ingresos"
   post "dashboard/guardar_pago", to: "dashboard#guardar_pago", as: :dashboard_guardar_pago
+  resources :estudiantes, only: [:update, :destroy]
+  resources :pagos, only: [:update, :destroy]
   get "dashboard/consultas"
   get "dashboard/control_usuarios"
   
