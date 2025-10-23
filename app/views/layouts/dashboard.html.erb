@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dashboard</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+  </head>
+
+  <body>
+    <!-- Barra de navegación visible solo si el usuario está logueado -->
+    <% if @usuario %>
+      <nav>
+        <ul>
+          <% if @usuario.rol.nombre == "administrador" %>
+            <li><%= link_to "Dashboard", dashboard_path %></li>
+            <li><%= link_to "Ingresos", dashboard_ingresos_path %></li>
+            <li><%= link_to "Consultas", dashboard_consultas_path %></li>
+            <li><%= link_to "Control Usuarios", dashboard_control_usuarios_path %></li>
+
+          <% elsif @usuario.rol.nombre == "suplente" %>
+            <li><%= link_to "Dashboard", dashboard_path %></li>
+            <li><%= link_to "Ingresos", dashboard_ingresos_path %></li>
+            <li><%= link_to "Consultas", dashboard_consultas_path %></li>
+
+          <% elsif @usuario.rol.nombre == "consultor" %>
+            <li><%= link_to "Dashboard", dashboard_path %></li>
+            <li><%= link_to "Consultas", dashboard_consultas_path %></li>
+          <% end %>
+
+          <li><%= button_to "Cerrar sesión", logout_path, method: :delete %></li>
+        </ul>
+      </nav>
+    <% end %>
+
+    <!-- Aquí se renderiza el contenido de cada vista -->
+    <%= yield %>
+  </body>
+</html>

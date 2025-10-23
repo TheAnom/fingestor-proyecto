@@ -1,4 +1,6 @@
 class DashboardController < ApplicationController
+  layout "dashboard"
+
   before_action :require_login
   before_action :set_usuario
 
