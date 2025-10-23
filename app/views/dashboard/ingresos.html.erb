@@ -1,2 +1,209 @@
-<h2>Pestaña: Ingresos</h2>
-<p>Aquí irán los registros de ingresos.</p>
+<h1>Registrar / Actualizar Estudiante</h1>
+
+<%= form_with model: (@estudiante || Estudiante.new), url: dashboard_ingresos_path, local: true, id: 'estudiante-form' do |f| %>
+  <% if (@estudiante || Estudiante.new).respond_to?(:errors) && (@estudiante || Estudiante.new).errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize((@estudiante || Estudiante.new).errors.count, "error") %> impidieron guardar el estudiante:</h2>
+      <ul>
+        <% (@estudiante || Estudiante.new).errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <p>
+    <%= f.label :nombre_completo, "Nombre completo" %><br>
+    <%= f.text_field :nombre_completo, required: true %>
+  </p>
+
+  <p>
+    <%= f.label :telefono, "Teléfono" %><br>
+    <%= f.telephone_field :telefono %>
+  </p>
+
+  <p>
+    <%= f.label :grado_id, "Grado" %><br>
+    <%= f.collection_select :grado_id, Grado.all.order(:nombre), :id, :nombre, prompt: "Selecciona un grado" %>
+  </p>
+
+  <p>
+    <%= f.label :institucion, "Institución" %><br>
+    <%= f.text_field :institucion %>
+  </p>
+
+  <p>
+    <%= f.submit "Guardar", class: "btn btn-primary" %>
+  </p>
+<% end %>
+
+<hr>
+
+<div id="pago-container">
+  <h2>Registrar Pago</h2>
+  <p>Estudiante seleccionado: <span id="estudiante-seleccionado">(ninguno)</span></p>
+  <%= form_with url: dashboard_guardar_pago_path, local: true do |f| %>
+    <%= hidden_field_tag :estudiante_id, nil, id: "pago_estudiante_id" %>
+
+    <p>
+      <%= label_tag :concepto_pago_id, "Concepto" %><br>
+      <%= select_tag :concepto_pago_id, options_from_collection_for_select(@conceptos, :id, :nombre), prompt: "Selecciona un concepto" %>
+    </p>
+
+    <p>
+      <%= label_tag :monto, "Monto" %><br>
+      <%= number_field_tag :monto, nil, step: 0.01 %>
+    </p>
+
+    <p>
+      <%= submit_tag "Guardar Pago", class: "btn btn-primary" %>
+    </p>
+  <% end %>
+</div>
+
+<hr>
+
+<h2>Estudiantes registrados</h2>
+<table id="estudiantes-table" border="1" cellpadding="6" cellspacing="0">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Teléfono</th>
+      <th>Grado</th>
+      <th>Institución</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @estudiantes.each do |e| %>
+      <tr data-id="<%= e.id %>" data-nombre="<%= j e.nombre_completo %>" data-telefono="<%= j e.telefono %>" data-grado_id="<%= e.grado_id %>" data-institucion="<%= j e.institucion %>">
+        <td><%= e.nombre_completo %></td>
+        <td><%= e.telefono %></td>
+        <td><%= e.grado&.nombre %></td>
+        <td><%= e.institucion %></td>
+        <td>
+          <button class="btn-edit" type="button">Modificar</button>
+          <button class="btn-delete" type="button">Eliminar</button>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<script>
+  // Variable temporal que mantiene la id del estudiante seleccionado
+  window.selectedEstudianteId = null;
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const table = document.getElementById('estudiantes-table');
+    if (!table) return;
+
+    table.querySelectorAll('tbody tr').forEach(function(row) {
+      row.addEventListener('click', function() {
+        // Quitar clase selected de otros
+        table.querySelectorAll('tbody tr.selected').forEach(function(r){ r.classList.remove('selected'); });
+        row.classList.add('selected');
+
+        // Leer datos del row
+        const id = row.dataset.id;
+        const nombre = row.dataset.nombre || '';
+        const telefono = row.dataset.telefono || '';
+        const gradoId = row.dataset.grado_id || '';
+        const institucion = row.dataset.institucion || '';
+
+        // Guardar en variable temporal
+        window.selectedEstudianteId = id;
+
+        // Actualizar visual
+        document.getElementById('estudiante-seleccionado').textContent = nombre + ' (id: ' + id + ')';
+
+        // Rellenar el formulario de estudiante (por id)
+        const form = document.getElementById('estudiante-form');
+        if (form) {
+          const nombreInput = form.querySelector('input[name="estudiante[nombre_completo]"]');
+          const telefonoInput = form.querySelector('input[name="estudiante[telefono]"]');
+          const gradoSelect = form.querySelector('select[name="estudiante[grado_id]"]');
+          const institucionInput = form.querySelector('input[name="estudiante[institucion]"]');
+
+          if (nombreInput) nombreInput.value = nombre;
+          if (telefonoInput) telefonoInput.value = telefono;
+          if (gradoSelect) gradoSelect.value = gradoId;
+          if (institucionInput) institucionInput.value = institucion;
+        }
+
+        // Actualizar hidden del formulario de pago
+        const pagoHidden = document.getElementById('pago_estudiante_id');
+        if (pagoHidden) pagoHidden.value = id;
+      });
+    });
+  });
+</script>
+
+<hr>
+
+<h2>Pagos registrados</h2>
+<table id="pagos-table" border="1" cellpadding="6" cellspacing="0">
+  <thead>
+    <tr>
+      <th>Concepto</th>
+      <th>Estudiante</th>
+      <th>Usuario</th>
+      <th>Monto</th>
+      <th>Fecha</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @pagos.each do |p| %>
+      <tr data-id="<%= p.id %>" data-concepto_id="<%= p.concepto_pago_id %>" data-estudiante_id="<%= p.estudiante_id %>" data-monto="<%= p.monto %>">
+        <td><%= p.concepto_pago&.nombre %></td>
+        <td><%= p.estudiante&.nombre_completo %></td>
+        <td><%= p.usuario&.nombre %></td>
+        <td><%= p.monto %></td>
+        <td><%= p.fecha %></td>
+        <td>
+          <button class="btn-edit-pago" type="button">Modificar</button>
+          <button class="btn-delete-pago" type="button">Eliminar</button>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<script>
+  // Hacer que al clickear un pago se seleccione el estudiante correspondiente y se cargue el payment form
+  document.addEventListener('DOMContentLoaded', function() {
+    const pagosTable = document.getElementById('pagos-table');
+    if (!pagosTable) return;
+
+    pagosTable.querySelectorAll('tbody tr').forEach(function(row) {
+      row.addEventListener('click', function() {
+        const estudianteId = row.dataset.estudiante_id;
+        const conceptoId = row.dataset.concepto_id;
+        const monto = row.dataset.monto;
+
+        // Seleccionar la fila de estudiantes correspondiente
+        const estudiantesTable = document.getElementById('estudiantes-table');
+        if (estudiantesTable) {
+          estudiantesTable.querySelectorAll('tbody tr.selected').forEach(function(r){ r.classList.remove('selected'); });
+          const target = estudiantesTable.querySelector('tbody tr[data-id="' + estudianteId + '"]');
+          if (target) {
+            target.classList.add('selected');
+            // Simular click para rellenar formulario de estudiante
+            target.click();
+          }
+        }
+
+        // Rellenar el formulario de pago
+        const conceptoSelect = document.querySelector('select[name="concepto_pago_id"]');
+        const montoInput = document.querySelector('input[name="monto"]');
+        const pagoHidden = document.getElementById('pago_estudiante_id');
+
+        if (conceptoSelect) conceptoSelect.value = conceptoId;
+        if (montoInput) montoInput.value = monto;
+        if (pagoHidden) pagoHidden.value = estudianteId;
+      });
+    });
+  });
+</script>
+

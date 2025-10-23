@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   get "dashboard/index"
   get "dashboard/ingresos"
+  post "dashboard/ingresos", to: "dashboard#ingresos"
+  post "dashboard/guardar_pago", to: "dashboard#guardar_pago", as: :dashboard_guardar_pago
   get "dashboard/consultas"
   get "dashboard/control_usuarios"
   
