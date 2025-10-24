@@ -1,2 +1,271 @@
-<h2>Pestaña: Control de Usuarios</h2>
-<p>Aquí se administrarán los usuarios del sistema.</p>
+<h1>Control de Usuarios</h1>
+
+<!-- Contenedor 1: Asignaciones -->
+<div id="contenedor-1" class="contenedor">
+  <h2>Asignaciones</h2>
+  
+  <%= form_with url: dashboard_guardar_asignacion_path, local: true, id: 'asignacion-form' do |f| %>
+    <div class="form-group">
+      <%= label_tag :estudiante_id, "Estudiante" %>
+      <div class="relative" style="position: relative;">
+        <input type="text" id="estudiante-search" placeholder="Buscar estudiante..." class="form-control">
+        <input type="hidden" id="estudiante_id" name="asignacion[estudiante_id]">
+        <div id="estudiante-suggestions" style="position: absolute; top: 100%; left: 0; width: 150px; background: white; border: 1px solid #ddd; border-top: none; border-radius: 0 0 4px 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 9999; max-height: 200px; overflow-y: auto; display: none;"></div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <%= label_tag :curso_id, "Curso" %>
+      <%= select_tag :curso_id, options_from_collection_for_select(@cursos, :id, :nombre), prompt: "Selecciona un curso", class: "form-control", name: "asignacion[curso_id]" %>
+    </div>
+
+    <div class="form-group">
+      <%= label_tag :nota, "Nota" %>
+      <%= number_field_tag :nota, 0, class: "form-control", name: "asignacion[nota]", min: 0, max: 100 %>
+    </div>
+
+    <%= submit_tag "Guardar", class: "btn btn-primary" %>
+  <% end %>
+
+  <hr>
+
+  <h3>Asignaciones registradas</h3>
+  <table id="asignaciones-table" border="1" cellpadding="6" cellspacing="0">
+    <thead>
+      <tr>
+        <th>Estudiante</th>
+        <th>Curso</th>
+        <th>Nota</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @asignaciones.each do |a| %>
+        <tr data-id="<%= a.id %>" data-estudiante_id="<%= a.estudiante_id %>" data-curso_id="<%= a.curso_id %>" data-nota="<%= a.nota %>">
+          <td><%= a.estudiante&.nombre_completo %></td>
+          <td><%= a.curso&.nombre %></td>
+          <td><%= a.nota %></td>
+          <td>
+            <button class="btn-edit-asignacion" type="button">Modificar</button>
+            <button class="btn-delete-asignacion" type="button">Eliminar</button>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<!-- Contenedor 2: (Reservado para futuras funcionalidades) -->
+<div id="contenedor-2" class="contenedor">
+  <h2>Contenedor 2</h2>
+  <p>Este contenedor está reservado para futuras funcionalidades.</p>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const estudianteSearch = document.getElementById('estudiante-search');
+    const estudianteId = document.getElementById('estudiante_id');
+    const suggestions = document.getElementById('estudiante-suggestions');
+    const asignacionesTable = document.getElementById('asignaciones-table');
+
+    // Typeahead para estudiantes
+    if (estudianteSearch) {
+      estudianteSearch.addEventListener('input', function() {
+        const query = this.value.trim();
+        if (query.length < 2) {
+          suggestions.innerHTML = '';
+          return;
+        }
+
+        fetch(`/dashboard/buscar_estudiantes?q=${encodeURIComponent(query)}`, {
+          headers: { 'Accept': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+          suggestions.innerHTML = '';
+          if (data.estudiantes && data.estudiantes.length > 0) {
+            data.estudiantes.forEach(estudiante => {
+              const div = document.createElement('div');
+              div.style.cssText = 'padding: 10px 12px; cursor: pointer; border-bottom: 1px solid #eee; background: white;';
+              div.textContent = `${estudiante.nombre_completo} - ${estudiante.grado_nombre || 'Sin grado'}`;
+              div.dataset.id = estudiante.id;
+              div.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = '#f8f9fa';
+              });
+              div.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = 'white';
+              });
+              div.addEventListener('click', function() {
+                estudianteSearch.value = estudiante.nombre_completo;
+                estudianteId.value = estudiante.id;
+                suggestions.style.display = 'none';
+              });
+              suggestions.appendChild(div);
+            });
+            suggestions.style.display = 'block';
+          } else {
+            suggestions.style.display = 'none';
+          }
+        })
+        .catch(error => console.error('Error:', error));
+      });
+
+      // Ocultar sugerencias al hacer click fuera
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('.relative')) {
+          suggestions.style.display = 'none';
+        }
+      });
+    }
+
+    // Filtrar tabla de asignaciones al seleccionar estudiante
+    if (estudianteId && asignacionesTable) {
+      estudianteId.addEventListener('change', function() {
+        const estudianteIdValue = this.value;
+        const rows = asignacionesTable.querySelectorAll('tbody tr');
+        
+        rows.forEach(row => {
+          if (estudianteIdValue === '' || row.dataset.estudiante_id === estudianteIdValue) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        });
+      });
+    }
+
+    // Función para attach handlers
+    function attachAsignacionHandlers(row) {
+      const editBtn = row.querySelector('.btn-edit-asignacion');
+      const deleteBtn = row.querySelector('.btn-delete-asignacion');
+
+      if (editBtn) {
+        editBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const asignacionId = row.dataset.id;
+          const estudianteId = row.dataset.estudiante_id;
+          const cursoId = row.dataset.curso_id;
+          const nota = row.dataset.nota;
+
+          // Rellenar formulario
+          const form = document.getElementById('asignacion-form');
+          if (form) {
+            const estudianteSearch = form.querySelector('#estudiante-search');
+            const estudianteIdField = form.querySelector('#estudiante_id');
+            const cursoSelect = form.querySelector('select[name="asignacion[curso_id]"]');
+            const notaInput = form.querySelector('input[name="asignacion[nota]"]');
+
+          if (estudianteSearch) estudianteSearch.value = row.querySelector('td:nth-child(1)').textContent;
+          if (estudianteIdField) estudianteIdField.value = estudianteId;
+            if (cursoSelect) cursoSelect.value = cursoId;
+            if (notaInput) notaInput.value = nota;
+
+            // Agregar campo hidden para ID
+            let idField = form.querySelector('input[name="asignacion[id]"]');
+            if (!idField) {
+              idField = document.createElement('input');
+              idField.type = 'hidden';
+              idField.name = 'asignacion[id]';
+              form.appendChild(idField);
+            }
+            idField.value = asignacionId;
+
+            // Cambiar texto del botón
+            const submitBtn = form.querySelector('input[type="submit"]');
+            if (submitBtn) submitBtn.value = 'Actualizar';
+          }
+        });
+      }
+
+      if (deleteBtn) {
+        deleteBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const asignacionId = row.dataset.id;
+          
+          if (!confirm('¿Eliminar esta asignación?')) return;
+          
+          fetch(`/asignacion_cursos/${asignacionId}`, {
+            method: 'DELETE',
+            headers: { 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content') }
+          })
+          .then(response => {
+            if (response.ok) {
+              row.remove();
+            } else {
+              alert('Error al eliminar la asignación');
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('Error al eliminar la asignación');
+          });
+        });
+      }
+    }
+
+    // Attach handlers to existing rows
+    document.querySelectorAll('#asignaciones-table tbody tr').forEach(attachAsignacionHandlers);
+
+    // Interceptar submit del formulario
+    const asignacionForm = document.getElementById('asignacion-form');
+    if (asignacionForm) {
+      asignacionForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(asignacionForm);
+        const asignacionId = formData.get('asignacion[id]');
+        const url = asignacionId ? `/asignacion_cursos/${asignacionId}` : asignacionForm.action;
+        const method = asignacionId ? 'PATCH' : 'POST';
+
+        fetch(url, {
+          method: method,
+          headers: { 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content') },
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            if (asignacionId) {
+              // Actualizar fila existente
+              const row = document.querySelector(`#asignaciones-table tbody tr[data-id="${asignacionId}"]`);
+              if (row) {
+                row.dataset.estudiante_id = data.asignacion.estudiante_id;
+                row.dataset.curso_id = data.asignacion.curso_id;
+                row.dataset.nota = data.asignacion.nota;
+                row.querySelector('td:nth-child(1)').textContent = data.asignacion.estudiante_nombre;
+                row.querySelector('td:nth-child(2)').textContent = data.asignacion.curso_nombre;
+                row.querySelector('td:nth-child(3)').textContent = data.asignacion.nota;
+              }
+            } else {
+              // Agregar nueva fila
+              const tbody = document.querySelector('#asignaciones-table tbody');
+              const tr = document.createElement('tr');
+              tr.dataset.id = data.asignacion.id;
+              tr.dataset.estudiante_id = data.asignacion.estudiante_id;
+              tr.dataset.curso_id = data.asignacion.curso_id;
+              tr.dataset.nota = data.asignacion.nota;
+              tr.innerHTML = `<td>${data.asignacion.estudiante_nombre}</td>
+                              <td>${data.asignacion.curso_nombre}</td>
+                              <td>${data.asignacion.nota}</td>
+                              <td><button class="btn-edit-asignacion" type="button">Modificar</button> <button class="btn-delete-asignacion" type="button">Eliminar</button></td>`;
+              tbody.appendChild(tr);
+              
+              // Reattach event handlers for new buttons
+              attachAsignacionHandlers(tr);
+            }
+
+            // Reset form
+            asignacionForm.reset();
+            const idField = asignacionForm.querySelector('input[name="asignacion[id]"]');
+            if (idField) idField.remove();
+            const submitBtn = asignacionForm.querySelector('input[type="submit"]');
+            if (submitBtn) submitBtn.value = 'Guardar';
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Error al guardar la asignación');
+        });
+      });
+    }
+  });
+</script>

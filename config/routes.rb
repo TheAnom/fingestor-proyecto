@@ -7,6 +7,9 @@ Rails.application.routes.draw do
   resources :pagos, only: [:update, :destroy]
   get "dashboard/consultas"
   get "dashboard/control_usuarios"
+  get "dashboard/buscar_estudiantes", to: "dashboard#buscar_estudiantes"
+  post "dashboard/guardar_asignacion", to: "dashboard#guardar_asignacion", as: :dashboard_guardar_asignacion
+  resources :asignacion_cursos, only: [:update, :destroy, :show]
   
   root "home#index"
 

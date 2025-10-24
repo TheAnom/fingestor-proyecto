@@ -234,8 +234,8 @@
       });
     });
 
-    // Handlers para botones de modificar/eliminar estudiantes
-    table.querySelectorAll('tbody tr').forEach(function(row) {
+    // Función para attach handlers a filas de estudiantes
+    function attachEstudianteHandlers(row) {
       const editBtn = row.querySelector('.btn-edit');
       const delBtn = row.querySelector('.btn-delete');
       const estudianteId = row.dataset.id;
@@ -269,9 +269,6 @@
           // Change submit button text
           const submitBtn = form.querySelector('input[type="submit"]');
           if (submitBtn) submitBtn.value = 'Actualizar';
-
-          // Store original form action to restore later if needed
-          form.dataset.originalAction = form.action;
         });
       }
 
@@ -285,7 +282,6 @@
           }).then(function(res){
             if (res.ok) {
               // quitar fila y limpiar formulario si estaba seleccionada
-              // Remove student row
               row.remove();
 
               // Remove associated pagos rows from pagos table
@@ -309,7 +305,10 @@
           });
         });
       }
-    });
+    }
+
+    // Handlers para botones de modificar/eliminar estudiantes
+    table.querySelectorAll('tbody tr').forEach(attachEstudianteHandlers);
 
     // Interceptar submit del formulario de estudiante para soporte AJAX create/update
     const estudianteForm = document.getElementById('estudiante-form');
@@ -323,7 +322,10 @@
 
         fetch(url, {
           method: method,
-          headers: { 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content') },
+          headers: { 
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json'
+          },
           body: formData
         }).then(function(res){
           if (res.ok) return res.json();
@@ -349,8 +351,22 @@
               }
             } else {
               // Añadir nueva fila al inicio
-              // Para simplicidad, recargar la página para reflejar nuevos datos
-              window.location.reload();
+              const tbody = document.querySelector('#estudiantes-table tbody');
+              const tr = document.createElement('tr');
+              tr.dataset.id = json.estudiante.id;
+              tr.dataset.nombre = json.estudiante.nombre_completo;
+              tr.dataset.telefono = json.estudiante.telefono || '';
+              tr.dataset.grado_id = json.estudiante.grado_id || '';
+              tr.dataset.institucion = json.estudiante.institucion || '';
+              tr.innerHTML = `<td>${json.estudiante.nombre_completo}</td>
+                              <td>${json.estudiante.telefono || ''}</td>
+                              <td>${json.estudiante.grado_nombre || ''}</td>
+                              <td>${json.estudiante.institucion || ''}</td>
+                              <td><button class="btn-edit" type="button">Modificar</button> <button class="btn-delete" type="button">Eliminar</button></td>`;
+              tbody.insertBefore(tr, tbody.firstChild);
+              
+              // Reattach event handlers for new row
+              attachEstudianteHandlers(tr);
             }
 
             // Reset form to create mode

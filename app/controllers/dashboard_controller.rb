@@ -18,13 +18,31 @@ class DashboardController < ApplicationController
       @estudiante = Estudiante.new(estudiante_params)
 
       if @estudiante.save
-        # Después de guardar, limpiar los campos y volver a mostrar el formulario
-        flash.now[:notice] = "Estudiante guardado correctamente"
-        @estudiante = Estudiante.new
-        render :ingresos
+        if request.xhr? || request.format.json?
+          render json: { 
+            success: true, 
+            estudiante: {
+              id: @estudiante.id,
+              nombre_completo: @estudiante.nombre_completo,
+              telefono: @estudiante.telefono,
+              grado_id: @estudiante.grado_id,
+              grado_nombre: @estudiante.grado&.nombre,
+              institucion: @estudiante.institucion
+            }
+          }
+        else
+          # Después de guardar, limpiar los campos y volver a mostrar el formulario
+          flash.now[:notice] = "Estudiante guardado correctamente"
+          @estudiante = Estudiante.new
+          render :ingresos
+        end
       else
-        flash.now[:alert] = "No se pudo guardar el estudiante"
-        render :ingresos, status: :unprocessable_entity
+        if request.xhr? || request.format.json?
+          render json: { success: false, errors: @estudiante.errors.full_messages }, status: :unprocessable_entity
+        else
+          flash.now[:alert] = "No se pudo guardar el estudiante"
+          render :ingresos, status: :unprocessable_entity
+        end
       end
     else
       @estudiante = Estudiante.new
@@ -70,6 +88,50 @@ class DashboardController < ApplicationController
   end
 
   def control_usuarios
+    @estudiantes = Estudiante.all.order(:nombre_completo)
+    @cursos = Curso.all.order(:nombre)
+    @asignaciones = AsignacionCurso.includes(:estudiante, :curso).order(created_at: :desc)
+  end
+
+  def buscar_estudiantes
+    query = params[:q]
+    estudiantes = Estudiante.includes(:grado)
+                           .where("LOWER(nombre_completo) LIKE ?", "%#{query.downcase}%")
+                           .limit(10)
+                           .map do |e|
+      {
+        id: e.id,
+        nombre_completo: e.nombre_completo,
+        grado_nombre: e.grado&.nombre
+      }
+    end
+
+    render json: { estudiantes: estudiantes }
+  end
+
+  def guardar_asignacion
+    if params[:asignacion][:id].present?
+      asignacion = AsignacionCurso.find(params[:asignacion][:id])
+      asignacion.assign_attributes(asignacion_params)
+    else
+      asignacion = AsignacionCurso.new(asignacion_params)
+    end
+
+    if asignacion.save
+      render json: { 
+        success: true, 
+        asignacion: {
+          id: asignacion.id,
+          estudiante_id: asignacion.estudiante_id,
+          estudiante_nombre: asignacion.estudiante&.nombre_completo,
+          curso_id: asignacion.curso_id,
+          curso_nombre: asignacion.curso&.nombre,
+          nota: asignacion.nota
+        }
+      }
+    else
+      render json: { success: false, errors: asignacion.errors.full_messages }, status: :unprocessable_entity
+    end
   end
 
   private
@@ -86,5 +148,9 @@ class DashboardController < ApplicationController
 
   def estudiante_params
     params.require(:estudiante).permit(:nombre_completo, :telefono, :grado_id, :institucion)
+  end
+
+  def asignacion_params
+    params.require(:asignacion).permit(:estudiante_id, :curso_id, :nota, :id)
   end
 end
