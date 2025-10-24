@@ -89,7 +89,8 @@ class DashboardController < ApplicationController
 
   def control_usuarios
     @estudiantes = Estudiante.all.order(:nombre_completo)
-    @cursos = Curso.all.order(:nombre)
+    @cursos = Curso.includes(:profesor).all.order(:nombre)
+    @profesores = Profesor.all.order(:nombre)
     @asignaciones = AsignacionCurso.includes(:estudiante, :curso).order(created_at: :desc)
   end
 
@@ -134,6 +135,51 @@ class DashboardController < ApplicationController
     end
   end
 
+  def guardar_curso
+    if params[:curso][:id].present?
+      curso = Curso.find(params[:curso][:id])
+      curso.assign_attributes(curso_params.except(:id))
+    else
+      curso = Curso.new(curso_params.except(:id))
+    end
+
+    if curso.save
+      render json: { 
+        success: true, 
+        curso: {
+          id: curso.id,
+          nombre: curso.nombre,
+          profesor_id: curso.profesor_id,
+          profesor_nombre: curso.profesor&.nombre
+        }
+      }
+    else
+      render json: { success: false, errors: curso.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
+  def guardar_profesor
+    if params[:profesor][:id].present?
+      profesor = Profesor.find(params[:profesor][:id])
+      profesor.assign_attributes(profesor_params.except(:id))
+    else
+      profesor = Profesor.new(profesor_params.except(:id))
+    end
+
+    if profesor.save
+      render json: { 
+        success: true, 
+        profesor: {
+          id: profesor.id,
+          nombre: profesor.nombre,
+          telefono: profesor.telefono
+        }
+      }
+    else
+      render json: { success: false, errors: profesor.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def require_login
@@ -152,5 +198,13 @@ class DashboardController < ApplicationController
 
   def asignacion_params
     params.require(:asignacion).permit(:estudiante_id, :curso_id, :nota, :id)
+  end
+
+  def curso_params
+    params.require(:curso).permit(:nombre, :profesor_id, :id)
+  end
+
+  def profesor_params
+    params.require(:profesor).permit(:nombre, :telefono, :id)
   end
 end
