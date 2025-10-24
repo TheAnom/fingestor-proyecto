@@ -11,9 +11,11 @@ Rails.application.routes.draw do
   post "dashboard/guardar_asignacion", to: "dashboard#guardar_asignacion", as: :dashboard_guardar_asignacion
   post "dashboard/guardar_curso", to: "dashboard#guardar_curso", as: :dashboard_guardar_curso
   post "dashboard/guardar_profesor", to: "dashboard#guardar_profesor", as: :dashboard_guardar_profesor
+  post "dashboard/guardar_usuario", to: "dashboard#guardar_usuario", as: :dashboard_guardar_usuario
   resources :asignacion_cursos, only: [:update, :destroy, :show]
   resources :cursos, only: [:update, :destroy]
   resources :profesores, only: [:update, :destroy]
+  resources :usuarios, only: [:update, :destroy]
   
   root "home#index"
 

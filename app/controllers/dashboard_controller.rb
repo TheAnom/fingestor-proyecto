@@ -91,6 +91,8 @@ class DashboardController < ApplicationController
     @estudiantes = Estudiante.all.order(:nombre_completo)
     @cursos = Curso.includes(:profesor).all.order(:nombre)
     @profesores = Profesor.all.order(:nombre)
+    @usuarios = Usuario.includes(:rol).all.order(:nombre)
+    @roles = Rol.all.order(:nombre)
     @asignaciones = AsignacionCurso.includes(:estudiante, :curso).order(created_at: :desc)
   end
 
@@ -180,6 +182,29 @@ class DashboardController < ApplicationController
     end
   end
 
+  def guardar_usuario
+    if params[:usuario][:id].present?
+      usuario = Usuario.find(params[:usuario][:id])
+      usuario.assign_attributes(usuario_params.except(:id))
+    else
+      usuario = Usuario.new(usuario_params.except(:id))
+    end
+
+    if usuario.save
+      render json: { 
+        success: true, 
+        usuario: {
+          id: usuario.id,
+          nombre: usuario.nombre,
+          rol_id: usuario.rol_id,
+          rol_nombre: usuario.rol&.nombre
+        }
+      }
+    else
+      render json: { success: false, errors: usuario.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def require_login
@@ -206,5 +231,9 @@ class DashboardController < ApplicationController
 
   def profesor_params
     params.require(:profesor).permit(:nombre, :telefono, :id)
+  end
+
+  def usuario_params
+    params.require(:usuario).permit(:nombre, :contraseña, :rol_id, :id)
   end
 end

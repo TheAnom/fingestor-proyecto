@@ -150,6 +150,55 @@
   </div>
 </div>
 
+<!-- Contenedor 3: Gestión de Usuarios -->
+<div id="contenedor-3" class="contenedor">
+  <h2>Gestión de Usuarios</h2>
+  
+  <%= form_with url: dashboard_guardar_usuario_path, local: true, id: 'usuario-form' do |f| %>
+    <div class="form-group">
+      <%= label_tag :nombre, "Nombre del Usuario" %>
+      <%= text_field_tag :nombre, nil, class: "form-control", name: "usuario[nombre]", placeholder: "Ingrese el nombre del usuario" %>
+    </div>
+
+    <div class="form-group">
+      <%= label_tag :contraseña, "Contraseña" %>
+      <%= password_field_tag :contraseña, nil, class: "form-control", name: "usuario[contraseña]", placeholder: "Ingrese la contraseña" %>
+    </div>
+
+    <div class="form-group">
+      <%= label_tag :rol_id, "Rol" %>
+      <%= select_tag :rol_id, options_from_collection_for_select(@roles, :id, :nombre), prompt: "Selecciona un rol", class: "form-control", name: "usuario[rol_id]" %>
+    </div>
+
+    <%= submit_tag "Guardar", class: "btn btn-primary" %>
+  <% end %>
+
+  <hr>
+
+  <h4>Lista de Usuarios</h4>
+  <table id="usuarios-table" border="1" cellpadding="6" cellspacing="0">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Rol</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @usuarios.each do |usuario| %>
+        <tr data-id="<%= usuario.id %>" data-nombre="<%= usuario.nombre %>" data-rol_id="<%= usuario.rol_id %>">
+          <td><%= usuario.nombre %></td>
+          <td><%= usuario.rol&.nombre %></td>
+          <td>
+            <button class="btn-edit-usuario" type="button">Modificar</button>
+            <button class="btn-delete-usuario" type="button">Eliminar</button>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     const estudianteSearch = document.getElementById('estudiante-search');
@@ -629,6 +678,146 @@
         .catch(error => {
           console.error('Error:', error);
           alert('Error al guardar el profesor');
+        });
+      });
+    }
+
+    // ===== FUNCIONALIDAD PARA USUARIOS =====
+    
+    // Función para attach handlers de usuarios
+    function attachUsuarioHandlers(row) {
+      const editBtn = row.querySelector('.btn-edit-usuario');
+      const deleteBtn = row.querySelector('.btn-delete-usuario');
+
+      if (editBtn) {
+        editBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const usuarioId = row.dataset.id;
+          const nombre = row.dataset.nombre;
+          const rolId = row.dataset.rol_id;
+
+          // Rellenar formulario de usuarios
+          const form = document.getElementById('usuario-form');
+          if (form) {
+            const nombreInput = form.querySelector('input[name="usuario[nombre]"]');
+            const rolSelect = form.querySelector('select[name="usuario[rol_id]"]');
+
+            if (nombreInput) nombreInput.value = nombre;
+            if (rolSelect) rolSelect.value = rolId;
+
+            // Agregar campo hidden para ID
+            let idField = form.querySelector('input[name="usuario[id]"]');
+            if (!idField) {
+              idField = document.createElement('input');
+              idField.type = 'hidden';
+              idField.name = 'usuario[id]';
+              form.appendChild(idField);
+            }
+            idField.value = usuarioId;
+
+            // Cambiar texto del botón
+            const submitBtn = form.querySelector('input[type="submit"]');
+            if (submitBtn) submitBtn.value = 'Actualizar';
+          }
+        });
+      }
+
+      if (deleteBtn) {
+        deleteBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const usuarioId = row.dataset.id;
+          
+          if (!confirm('¿Eliminar este usuario?')) return;
+          
+          fetch(`/usuarios/${usuarioId}`, {
+            method: 'DELETE',
+            headers: { 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content') },
+            credentials: 'same-origin'
+          })
+          .then(response => {
+            if (response.ok) {
+              row.remove();
+            } else {
+              alert('Error al eliminar el usuario');
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('Error al eliminar el usuario');
+          });
+        });
+      }
+    }
+
+    // Attach handlers to existing usuario rows
+    document.querySelectorAll('#usuarios-table tbody tr').forEach(attachUsuarioHandlers);
+
+    // Interceptar submit del formulario de usuarios
+    const usuarioForm = document.getElementById('usuario-form');
+    if (usuarioForm) {
+      usuarioForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(usuarioForm);
+        const usuarioId = formData.get('usuario[id]');
+        const url = usuarioId ? `/usuarios/${usuarioId}` : usuarioForm.action;
+        const method = usuarioId ? 'PATCH' : 'POST';
+
+        fetch(url, {
+          method: method,
+          headers: { 
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            usuario: {
+              nombre: formData.get('usuario[nombre]'),
+              contraseña: formData.get('usuario[contraseña]'),
+              rol_id: formData.get('usuario[rol_id]'),
+              id: formData.get('usuario[id]')
+            }
+          }),
+          credentials: 'same-origin'
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            if (usuarioId) {
+              // Actualizar fila existente
+              const row = document.querySelector(`#usuarios-table tbody tr[data-id="${usuarioId}"]`);
+              if (row) {
+                row.dataset.nombre = data.usuario.nombre;
+                row.dataset.rol_id = data.usuario.rol_id;
+                row.querySelector('td:nth-child(1)').textContent = data.usuario.nombre;
+                row.querySelector('td:nth-child(2)').textContent = data.usuario.rol_nombre;
+              }
+            } else {
+              // Agregar nueva fila
+              const tbody = document.querySelector('#usuarios-table tbody');
+              const tr = document.createElement('tr');
+              tr.dataset.id = data.usuario.id;
+              tr.dataset.nombre = data.usuario.nombre;
+              tr.dataset.rol_id = data.usuario.rol_id;
+              tr.innerHTML = `<td>${data.usuario.nombre}</td>
+                              <td>${data.usuario.rol_nombre}</td>
+                              <td><button class="btn-edit-usuario" type="button">Modificar</button> <button class="btn-delete-usuario" type="button">Eliminar</button></td>`;
+              tbody.appendChild(tr);
+              
+              // Reattach event handlers for new buttons
+              attachUsuarioHandlers(tr);
+            }
+
+            // Reset form
+            usuarioForm.reset();
+            const idField = usuarioForm.querySelector('input[name="usuario[id]"]');
+            if (idField) idField.remove();
+            const submitBtn = usuarioForm.querySelector('input[type="submit"]');
+            if (submitBtn) submitBtn.value = 'Guardar';
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Error al guardar el usuario');
         });
       });
     }
