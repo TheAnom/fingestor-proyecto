@@ -8,3 +8,130 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+
+/* Estilos para el contenedor unificado de tablas */
+#tablas-container {
+  margin: 20px 0;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.search-container {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.search-input {
+  width: 100%;
+  max-width: 400px;
+  padding: 12px 16px;
+  border: 2px solid #ddd;
+  border-radius: 25px;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.tables-wrapper {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.table-section {
+  flex: 1;
+  min-width: 300px;
+  background: white;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.table-section h2 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #333;
+  font-size: 1.2em;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 8px;
+}
+
+#estudiantes-table, #pagos-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+#estudiantes-table th, #pagos-table th {
+  background-color: #f8f9fa;
+  color: #495057;
+  font-weight: 600;
+  padding: 12px 8px;
+  text-align: left;
+  border-bottom: 2px solid #dee2e6;
+}
+
+#estudiantes-table td, #pagos-table td {
+  padding: 10px 8px;
+  border-bottom: 1px solid #dee2e6;
+  vertical-align: middle;
+}
+
+#estudiantes-table tbody tr:hover, #pagos-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+#estudiantes-table tbody tr.selected {
+  background-color: #e3f2fd;
+  border-left: 4px solid #007bff;
+}
+
+.btn-edit, .btn-delete, .btn-edit-pago, .btn-delete-pago {
+  padding: 6px 12px;
+  margin: 2px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-edit, .btn-edit-pago {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-edit:hover, .btn-edit-pago:hover {
+  background-color: #218838;
+}
+
+.btn-delete, .btn-delete-pago {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-delete:hover, .btn-delete-pago:hover {
+  background-color: #c82333;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .tables-wrapper {
+    flex-direction: column;
+  }
+  
+  .table-section {
+    min-width: 100%;
+  }
+  
+  .search-input {
+    max-width: 100%;
+  }
+}

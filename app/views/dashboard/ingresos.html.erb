@@ -63,36 +63,133 @@
 
 <hr>
 
-<h2>Estudiantes registrados</h2>
-<table id="estudiantes-table" border="1" cellpadding="6" cellspacing="0">
-  <thead>
-    <tr>
-      <th>Nombre</th>
-      <th>Teléfono</th>
-      <th>Grado</th>
-      <th>Institución</th>
-      <th>Acciones</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @estudiantes.each do |e| %>
-      <tr data-id="<%= e.id %>" data-nombre="<%= j e.nombre_completo %>" data-telefono="<%= j e.telefono %>" data-grado_id="<%= e.grado_id %>" data-institucion="<%= j e.institucion %>">
-        <td><%= e.nombre_completo %></td>
-        <td><%= e.telefono %></td>
-        <td><%= e.grado&.nombre %></td>
-        <td><%= e.institucion %></td>
-        <td>
-          <button class="btn-edit" type="button">Modificar</button>
-          <button class="btn-delete" type="button">Eliminar</button>
-        </td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+<!-- Contenedor unificado para las tablas -->
+<div id="tablas-container">
+  <!-- Input de búsqueda -->
+  <div class="search-container">
+    <input type="text" id="search-input" placeholder="Buscar..." class="search-input">
+  </div>
+
+  <!-- Contenedor de las tablas -->
+  <div class="tables-wrapper">
+    <!-- Tabla de Estudiantes -->
+    <div class="table-section">
+      <h2>Estudiantes registrados</h2>
+      <table id="estudiantes-table" border="1" cellpadding="6" cellspacing="0">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Teléfono</th>
+            <th>Grado</th>
+            <th>Institución</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @estudiantes.each do |e| %>
+            <tr data-id="<%= e.id %>" data-nombre="<%= j e.nombre_completo %>" data-telefono="<%= j e.telefono %>" data-grado_id="<%= e.grado_id %>" data-institucion="<%= j e.institucion %>">
+              <td><%= e.nombre_completo %></td>
+              <td><%= e.telefono %></td>
+              <td><%= e.grado&.nombre %></td>
+              <td><%= e.institucion %></td>
+              <td>
+                <button class="btn-edit" type="button">Modificar</button>
+                <button class="btn-delete" type="button">Eliminar</button>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Tabla de Pagos -->
+    <div class="table-section">
+      <h2>Pagos registrados</h2>
+      <table id="pagos-table" border="1" cellpadding="6" cellspacing="0">
+        <thead>
+          <tr>
+            <th>Concepto</th>
+            <th>Estudiante</th>
+            <th>Usuario</th>
+            <th>Monto</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @pagos.each do |p| %>
+            <tr data-id="<%= p.id %>" data-concepto_id="<%= p.concepto_pago_id %>" data-estudiante_id="<%= p.estudiante_id %>" data-monto="<%= p.monto %>">
+              <td><%= p.concepto_pago&.nombre %></td>
+              <td><%= p.estudiante&.nombre_completo %></td>
+              <td><%= p.usuario&.nombre %></td>
+              <td><%= p.monto %></td>
+              <td><%= p.fecha %></td>
+              <td>
+                <button class="btn-edit-pago" type="button">Modificar</button>
+                <button class="btn-delete-pago" type="button">Eliminar</button>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 
 <script>
   // Variable temporal que mantiene la id del estudiante seleccionado
   window.selectedEstudianteId = null;
+
+  // Funcionalidad de búsqueda en tiempo real
+  document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('search-input');
+    const estudiantesTable = document.getElementById('estudiantes-table');
+    const pagosTable = document.getElementById('pagos-table');
+
+    if (searchInput) {
+      searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase().trim();
+        
+        // Filtrar tabla de estudiantes
+        if (estudiantesTable) {
+          const estudiantesRows = estudiantesTable.querySelectorAll('tbody tr');
+          estudiantesRows.forEach(function(row) {
+            const nombre = (row.dataset.nombre || '').toLowerCase();
+            const telefono = (row.dataset.telefono || '').toLowerCase();
+            const institucion = (row.dataset.institucion || '').toLowerCase();
+            const gradoNombre = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+            
+            const matches = nombre.includes(searchTerm) || 
+                           telefono.includes(searchTerm) || 
+                           institucion.includes(searchTerm) || 
+                           gradoNombre.includes(searchTerm);
+            
+            row.style.display = matches ? '' : 'none';
+          });
+        }
+
+        // Filtrar tabla de pagos
+        if (pagosTable) {
+          const pagosRows = pagosTable.querySelectorAll('tbody tr');
+          pagosRows.forEach(function(row) {
+            const concepto = row.querySelector('td:nth-child(1)').textContent.toLowerCase();
+            const estudiante = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+            const usuario = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+            const monto = row.querySelector('td:nth-child(4)').textContent.toLowerCase();
+            const fecha = row.querySelector('td:nth-child(5)').textContent.toLowerCase();
+            
+            const matches = concepto.includes(searchTerm) || 
+                           estudiante.includes(searchTerm) || 
+                           usuario.includes(searchTerm) || 
+                           monto.includes(searchTerm) || 
+                           fecha.includes(searchTerm);
+            
+            row.style.display = matches ? '' : 'none';
+          });
+        }
+      });
+    }
+  });
 
   document.addEventListener('DOMContentLoaded', function() {
     const table = document.getElementById('estudiantes-table');
@@ -271,36 +368,6 @@
   });
 </script>
 
-<hr>
-
-<h2>Pagos registrados</h2>
-<table id="pagos-table" border="1" cellpadding="6" cellspacing="0">
-  <thead>
-    <tr>
-      <th>Concepto</th>
-      <th>Estudiante</th>
-      <th>Usuario</th>
-      <th>Monto</th>
-      <th>Fecha</th>
-      <th>Acciones</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @pagos.each do |p| %>
-      <tr data-id="<%= p.id %>" data-concepto_id="<%= p.concepto_pago_id %>" data-estudiante_id="<%= p.estudiante_id %>" data-monto="<%= p.monto %>">
-        <td><%= p.concepto_pago&.nombre %></td>
-        <td><%= p.estudiante&.nombre_completo %></td>
-        <td><%= p.usuario&.nombre %></td>
-        <td><%= p.monto %></td>
-        <td><%= p.fecha %></td>
-        <td>
-          <button class="btn-edit-pago" type="button">Modificar</button>
-          <button class="btn-delete-pago" type="button">Eliminar</button>
-        </td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
 
 <script>
   // Hacer que al clickear un pago se seleccione el estudiante correspondiente y se cargue el payment form
