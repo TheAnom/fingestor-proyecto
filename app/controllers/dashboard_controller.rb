@@ -5,6 +5,10 @@ class DashboardController < ApplicationController
   before_action :set_usuario
 
   def index
+    @estudiantes_count = Estudiante.count
+    @pagos_count = Pago.count
+    @hoy = Date.current
+    @ingresos_total = Pago.sum(:monto)
   end
 
   def ingresos
