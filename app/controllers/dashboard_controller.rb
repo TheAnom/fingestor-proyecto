@@ -87,6 +87,84 @@ class DashboardController < ApplicationController
   def consultas
   end
 
+  # GET /dashboard/consultas_datos
+  def consultas_datos
+    estudiante = Estudiante.includes(:grado).find_by(id: params[:estudiante_id])
+    return render json: { success: false, error: 'Estudiante no encontrado' }, status: :not_found unless estudiante
+
+    # Conceptos esperados: Inscripcion + meses Enero..Noviembre
+    conceptos = [
+      'Inscripcion', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre'
+    ]
+
+    pagos_raw = Pago.includes(:concepto_pago)
+                    .where(estudiante_id: estudiante.id, concepto_pago: { nombre: conceptos })
+
+    # Tomar el pago más reciente por concepto
+    pagos_por_concepto = {}
+    pagos_raw.each do |p|
+      nombre_concepto = p.concepto_pago&.nombre
+      next unless nombre_concepto
+      if pagos_por_concepto[nombre_concepto].nil? || (p.fecha && pagos_por_concepto[nombre_concepto][:fecha] && p.fecha > pagos_por_concepto[nombre_concepto][:fecha])
+        pagos_por_concepto[nombre_concepto] = { monto: p.monto, fecha: p.fecha }
+      else
+        pagos_por_concepto[nombre_concepto] ||= { monto: p.monto, fecha: p.fecha }
+      end
+    end
+
+    pagos_hash = {}
+    conceptos.each do |c|
+      pagos_hash[c] = pagos_por_concepto[c] ? pagos_por_concepto[c][:monto] : nil
+    end
+
+    # Calcular solvencia del mes actual con regla: después del día 5, si no está pagado el mes actual => No solvente; en otro caso => Solvente
+    hoy = Date.current
+    meses_labels = [nil, 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+    mes_actual_label = meses_labels[hoy.month]
+    # Solo se consideran Enero..Noviembre como columnas; si es Diciembre, considerar solvente por defecto salvo que se requiera otra regla
+    requiere_mes = conceptos.include?(mes_actual_label)
+    pagado_mes_actual = requiere_mes ? pagos_hash[mes_actual_label].present? : true
+    solvente = if hoy.day > 5
+      pagado_mes_actual
+    else
+      true
+    end
+
+    # Solvencia exámenes / papelería
+    exam_labels = ['Papeleria', 'Examen uno', 'Examen dos', 'Examen tres', 'Examen cuatro']
+    exams_pagos = Pago.includes(:concepto_pago)
+                      .where(estudiante_id: estudiante.id, concepto_pago: { nombre: exam_labels })
+    exams_status = exam_labels.index_with do |label|
+      exams_pagos.any? { |p| p.concepto_pago&.nombre == label }
+    end
+
+    # Asignaciones y promedio
+    asignaciones = AsignacionCurso.includes(:curso).where(estudiante_id: estudiante.id)
+    asignaciones_list = asignaciones.map do |a|
+      { curso_nombre: a.curso&.nombre, nota: a.nota }
+    end
+    notas = asignaciones.map(&:nota).compact.map(&:to_f)
+    promedio = notas.any? ? (notas.sum / notas.size) : nil
+
+    render json: {
+      success: true,
+      estudiante: {
+        id: estudiante.id,
+        nombre_completo: estudiante.nombre_completo,
+        institucion: estudiante.institucion,
+        grado_id: estudiante.grado_id,
+        grado_nombre: estudiante.grado&.nombre,
+        telefono: estudiante.telefono
+      },
+      pagos: pagos_hash,
+      solvente: solvente,
+      examenes: exams_status,
+      asignaciones: asignaciones_list,
+      promedio: promedio
+    }
+  end
+
   def control_usuarios
     @estudiantes = Estudiante.all.order(:nombre_completo)
     @cursos = Curso.includes(:profesor).all.order(:nombre)

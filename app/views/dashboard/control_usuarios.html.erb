@@ -162,7 +162,7 @@
 
     <div class="form-group">
       <%= label_tag :contraseña, "Contraseña" %>
-      <%= password_field_tag :contraseña, nil, class: "form-control", name: "usuario[contraseña]", placeholder: "Ingrese la contraseña" %>
+      <%= text_field_tag :contraseña, nil, class: "form-control", name: "usuario[contraseña]", placeholder: "Ingrese la contraseña" %>
     </div>
 
     <div class="form-group">
@@ -180,6 +180,7 @@
     <thead>
       <tr>
         <th>Nombre</th>
+        <th>Contraseña</th>
         <th>Rol</th>
         <th>Acciones</th>
       </tr>
@@ -188,6 +189,7 @@
       <% @usuarios.each do |usuario| %>
         <tr data-id="<%= usuario.id %>" data-nombre="<%= usuario.nombre %>" data-rol_id="<%= usuario.rol_id %>">
           <td><%= usuario.nombre %></td>
+          <td><%= usuario.contraseña %></td>
           <td><%= usuario.rol&.nombre %></td>
           <td>
             <button class="btn-edit-usuario" type="button">Modificar</button>
@@ -788,8 +790,10 @@
               if (row) {
                 row.dataset.nombre = data.usuario.nombre;
                 row.dataset.rol_id = data.usuario.rol_id;
+                const nuevaContrasena = (data.usuario && (data.usuario.contraseña || data.usuario.contrasena)) || formData.get('usuario[contraseña]') || '';
                 row.querySelector('td:nth-child(1)').textContent = data.usuario.nombre;
-                row.querySelector('td:nth-child(2)').textContent = data.usuario.rol_nombre;
+                row.querySelector('td:nth-child(2)').textContent = nuevaContrasena;
+                row.querySelector('td:nth-child(3)').textContent = data.usuario.rol_nombre;
               }
             } else {
               // Agregar nueva fila
@@ -798,7 +802,9 @@
               tr.dataset.id = data.usuario.id;
               tr.dataset.nombre = data.usuario.nombre;
               tr.dataset.rol_id = data.usuario.rol_id;
+              const nuevaContrasena = (data.usuario && (data.usuario.contraseña || data.usuario.contrasena)) || formData.get('usuario[contraseña]') || '';
               tr.innerHTML = `<td>${data.usuario.nombre}</td>
+                              <td>${nuevaContrasena}</td>
                               <td>${data.usuario.rol_nombre}</td>
                               <td><button class="btn-edit-usuario" type="button">Modificar</button> <button class="btn-delete-usuario" type="button">Eliminar</button></td>`;
               tbody.appendChild(tr);

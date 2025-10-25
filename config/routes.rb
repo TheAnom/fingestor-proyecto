@@ -28,6 +28,7 @@ Rails.application.routes.draw do
   get "/dashboard", to: "dashboard#index"
   get "/dashboard/ingresos", to: "dashboard#ingresos"
   get "/dashboard/consultas", to: "dashboard#consultas"
+  get "/dashboard/consultas_datos", to: "dashboard#consultas_datos"
   get "/dashboard/control_usuarios", to: "dashboard#control_usuarios"
 
   get "home/index"
