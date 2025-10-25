@@ -1,44 +1,9 @@
-# README
+# Proyecto FinGestor
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Propuesta Inicial
 
-Things you may want to cover:
+[Acceda a Informacion de Proyecto Inicial](./01_intro/README.md)
 
-* Ruby version
+## Diseño de Datos
 
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
-
-
-
-["asignacion_cursos",
- "estudiantes",
- "permiso_rols",
- "permisos",
- "rols",
- "usuarios",
- "schema_migrations",
- "cursos",
- "ar_internal_metadata",
- "pagos",
- "profesors",
- "grados",
- "concepto_pagos"]
-
-
-Ver todas las tablas: ActiveRecord::Base.connection.tables
-Ver las columnas de una tabla: NombreDelModelo.column_names
+[Acceda a Información de Diseño de Datos](./02_database/README.md)
