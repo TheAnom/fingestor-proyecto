@@ -1,8 +1,35 @@
-<h1>Bienvenido, <%= @usuario.nombre %></h1>
-<h2>Panel Principal (Dashboard)</h2>
-<p>Tu rol es: <%= @usuario.rol.nombre %></p>
+<style>
+  .encabezado-nombres {
+  background-color: #AE445A; /* Gray-100 */
+  padding: 10px;
+}
+.titulo-encabezado {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0;
+  color: #432E54;
+}
+.rol-encabezado {
+  font-size: 1.25rem;
+  color: #E8BCB9; /* Gray-500 */
+  margin: 0;
+}
+body{
+  background-color: #E8BCB9;
+}
 
-<div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+</style>
+
+
+
+<div class=encabezado-nombres>
+  <h1 class="titulo-encabezado">Bienvenido, <%= @usuario.nombre %></h1>
+  <p class="rol-encabezado"><%= @usuario.rol.nombre %></p>
+  <h2 class="text-[#E8BCB9]">Dashboard</h2>
+</div>
+
+
+<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 bg-[#E8BCB9] p-[10px]">
   <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
     <h3 class="text-sm font-medium text-gray-900">Estudiantes</h3>
     <p class="mt-1 text-sm text-gray-500">Total de estudiantes</p>

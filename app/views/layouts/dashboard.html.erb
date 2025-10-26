@@ -6,40 +6,97 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <style>
-
-    </style>
-
   </head>
 
-  <body>
-    <!-- Barra de navegación visible solo si el usuario está logueado -->
+  <body class="pb-[60px]">
     <% if @usuario %>
-      <nav class="menu">
-        <ul class="lista">
+      <!-- 🔹 Menú principal -->
+      <nav id="menu"
+        class="fixed bottom-0 inset-0 z-10 bg-[#AE445A] p-6 w-screen h-screen transform -translate-x-full transition-transform duration-500 ease-in-out">
+        
+        <!-- 🔹 Botón de cierre -->
+        <div id="close-btn"
+          class="absolute right-3 top-3 w-[50px] h-[50px] bg-[#444] rounded-full flex items-center justify-center text-white cursor-pointer">
+          X
+        </div>
+
+        <!-- 🔹 Lista de enlaces -->
+        <ul
+          class="flex flex-wrap justify-around items-center gap-4 list-none mt-16 h-[80%]">
+          
           <% if @usuario.rol.nombre == "administrador" %>
-            <li><%= link_to "Dashboard", dashboard_path %></li>
-            <li><%= link_to "Ingresos", dashboard_ingresos_path %></li>
-            <li><%= link_to "Consultas", dashboard_consultas_path %></li>
-            <li><%= link_to "Control Usuarios", dashboard_control_usuarios_path %></li>
-
+            <li class="flex items-center justify-center text-center w-[130px] h-[160px] bg-[#E8BCB9] font-bold text-lg">
+              <%= link_to "Dashboard", dashboard_path %>
+            </li>
+            <li class="flex items-center justify-center text-center w-[130px] h-[160px] bg-[#E8BCB9] font-bold text-lg">
+              <%= link_to "Ingresos", dashboard_ingresos_path %>
+            </li>
+            <li class="flex items-center justify-center text-center w-[130px] h-[160px] bg-[#E8BCB9] font-bold text-lg">
+              <%= link_to "Consultas", dashboard_consultas_path %>
+            </li>
+            <li class="flex items-center justify-center text-center w-[130px] h-[160px] bg-[#E8BCB9] font-bold text-lg">
+              <%= link_to "Control Usuarios", dashboard_control_usuarios_path %>
+            </li>
           <% elsif @usuario.rol.nombre == "suplente" %>
-            <li><%= link_to "Dashboard", dashboard_path %></li>
-            <li><%= link_to "Ingresos", dashboard_ingresos_path %></li>
-            <li><%= link_to "Consultas", dashboard_consultas_path %></li>
-
+            <li class="flex items-center justify-center text-center w-[130px] h-[160px] bg-[#E8BCB9] font-bold text-lg">
+              <%= link_to "Dashboard", dashboard_path %>
+            </li>
+            <li class="flex items-center justify-center text-center w-[130px] h-[160px] bg-[#E8BCB9] font-bold text-lg">
+              <%= link_to "Ingresos", dashboard_ingresos_path %>
+            </li>
+            <li class="flex items-center justify-center text-center w-[130px] h-[160px] bg-[#E8BCB9] font-bold text-lg">
+              <%= link_to "Consultas", dashboard_consultas_path %>
+            </li>
           <% elsif @usuario.rol.nombre == "consultor" %>
-            <li><%= link_to "Dashboard", dashboard_path %></li>
-            <li><%= link_to "Consultas", dashboard_consultas_path %></li>
+            <li class="flex items-center justify-center text-center w-[130px] h-[160px] bg-[#E8BCB9] font-bold text-lg">
+              <%= link_to "Dashboard", dashboard_path %>
+            </li>
+            <li class="flex items-center justify-center text-center w-[130px] h-[160px] bg-[#E8BCB9] font-bold text-lg">
+              <%= link_to "Consultas", dashboard_consultas_path %>
+            </li>
           <% end %>
 
-          <li><%= button_to "Cerrar sesión", logout_path, method: :delete %></li>
+          <li class="flex items-center justify-center text-center w-[130px] h-[160px] bg-[#E8BCB9] font-bold text-lg">
+            <%= button_to "Cerrar sesión", logout_path, method: :delete %>
+          </li>
         </ul>
       </nav>
+
+      <!-- 🔹 Botón para abrir el menú -->
+      <div class="flex justify-center fixed bottom-[0px] w-full bg-[#AE445A] rounded-tl-[20px] rounded-tr-[20px]">
+        <div id="open-btn" class="grid grid-cols-3 gap-[4px] w-15 h-15 place-items-center p-[8px]">
+          <div class="w-[8px] h-[8px] bg-[#432E54] rounded-full"></div>
+          <div class="w-[8px] h-[8px] bg-[#432E54] rounded-full"></div>
+          <div class="w-[8px] h-[8px] bg-[#432E54] rounded-full"></div>
+          <div class="w-[8px] h-[8px] bg-[#432E54] rounded-full"></div>
+          <div class="w-[8px] h-[8px] bg-[#432E54] rounded-full"></div>
+          <div class="w-[8px] h-[8px] bg-[#432E54] rounded-full"></div>
+          <div class="w-[8px] h-[8px] bg-[#432E54] rounded-full"></div>
+          <div class="w-[8px] h-[8px] bg-[#432E54] rounded-full"></div>
+          <div class="w-[8px] h-[8px] bg-[#432E54] rounded-full"></div>
+        </div>
+
+      </div>
     <% end %>
 
-    <!-- Aquí se renderiza el contenido de cada vista -->
     <%= yield %>
+
+    <script>
+      const menu = document.getElementById('menu');
+      const closeBtn = document.getElementById('close-btn');
+      const openBtn = document.getElementById('open-btn');
+
+      // 🔹 Cerrar: mover fuera de la pantalla (-100vw)
+      closeBtn.addEventListener('click', () => {
+        menu.classList.remove('translate-x-0');
+        menu.classList.add('-translate-x-full');
+      });
+
+      // 🔹 Abrir: mostrar (translateX(0))
+      openBtn.addEventListener('click', () => {
+        menu.classList.remove('-translate-x-full');
+        menu.classList.add('translate-x-0');
+      });
+    </script>
   </body>
 </html>
