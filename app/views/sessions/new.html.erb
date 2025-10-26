@@ -1,22 +1,36 @@
-<h1>Iniciar Sesión</h1>
+<div class="min-h-screen bg-[#E8BCB9] flex flex-col items-center justify-center p-6 sm:p-8">
+<h1 class="text-[30px] font-bold mb-6">Iniciar Sesión</h1>
 
-<%= form_with url: login_path, method: :post, local: true do %>
+<%= form_with url: login_path, method: :post, local: true do%>
   <p>
     <label>Nombre:</label><br>
-    <%= text_field_tag :nombre %>
+    <%= text_field_tag :nombre%>
   </p>
 
-  <p>
+  <p class="mt-6">
     <label>Contraseña:</label><br>
     <%= password_field_tag :contraseña %>
   </p>
 
-  <p>
-    <%= submit_tag "Ingresar" %>
-    <%= link_to "Home", root_path %>
+  <p class="flex justify-center items-center gap-4 mt-10">
+    <%= submit_tag "Ingresar", class: "bg-[#AE445A] w-[100px] h-[40px] flex justify-center items-center rounded-[10px] lg:w-[200px] lg:h-[50px]" %>
+    <%= link_to "Home", root_path, class: "bg-[#AE445A] w-[100px] h-[40px] flex justify-center items-center rounded-[10px] lg:w-[200px] lg:h-[50px]" %>
   </p>
 <% end %>
 
 <% if flash[:alert] %>
   <p style="color:red"><%= flash[:alert] %></p>
 <% end %>
+
+</div>
+
+<style>
+  input:focus-visible {
+    outline: none;
+    border: 2px solid #AE445A;
+  }
+  input {
+    padding: 5px;
+    border-radius: 10px;
+  }
+</style>

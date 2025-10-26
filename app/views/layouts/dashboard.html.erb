@@ -5,15 +5,19 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag :application, "data-turbo-track": "reload" %>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+
+    </style>
+
   </head>
 
   <body>
     <!-- Barra de navegación visible solo si el usuario está logueado -->
     <% if @usuario %>
-      <nav>
-        <ul>
+      <nav class="menu">
+        <ul class="lista">
           <% if @usuario.rol.nombre == "administrador" %>
             <li><%= link_to "Dashboard", dashboard_path %></li>
             <li><%= link_to "Ingresos", dashboard_ingresos_path %></li>
