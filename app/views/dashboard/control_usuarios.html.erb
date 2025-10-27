@@ -1,147 +1,78 @@
-<h1>Control de Usuarios</h1>
+<style>
+  tr{
+    border-bottom: 1px solid #ddd;
+  }
+</style>
 
-<!-- Contenedor 1: Asignaciones -->
-<div id="contenedor-1" class="contenedor">
-  <h2>Asignaciones</h2>
-  
-  <%= form_with url: dashboard_guardar_asignacion_path, local: true, id: 'asignacion-form' do |f| %>
-    <div class="form-group">
-      <%= label_tag :estudiante_id, "Estudiante" %>
-      <div class="relative" style="position: relative;">
-        <input type="text" id="estudiante-search" placeholder="Buscar estudiante..." class="form-control">
+<h1 class="text-2xl font-bold text-slate-800 mb-4 bg-[#E8BCB9] flex items-center h-[100px] p-[10px]">Control de Usuarios</h1>
+
+<!-- CONTENEDOR 1: Asignaciones -->
+<div id="contenedor-1" class="space-y-6 bg-white shadow-md rounded-2xl p-6 mb-10">
+
+  <h2 class="text-[#432E54] font-semibold text-[24px]">Asignaciones</h2>
+
+  <%= form_with url: dashboard_guardar_asignacion_path, local: true, id: 'asignacion-form', class: "space-y-4" do |f| %>
+
+    <!-- Estudiante -->
+    <div>
+      <%= label_tag :estudiante_id, "Estudiante", class: "block text-sm font-medium text-slate-700 mb-1" %>
+      <div class="relative">
+        <input type="text" id="estudiante-search"
+               placeholder="Buscar estudiante..."
+               class="w-full rounded-md border border-slate-300 focus:ring-2 focus:ring-blue-400 focus:outline-none px-3 py-2 text-sm">
         <input type="hidden" id="estudiante_id" name="asignacion[estudiante_id]">
-        <div id="estudiante-suggestions" style="position: absolute; top: 100%; left: 0; width: 150px; background: white; border: 1px solid #ddd; border-top: none; border-radius: 0 0 4px 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 9999; max-height: 200px; overflow-y: auto; display: none;"></div>
+
+        <div id="estudiante-suggestions"
+             class="absolute top-full left-0 w-[150px] bg-white border border-slate-300 border-t-0 rounded-b-md shadow-lg z-50 max-h-52 overflow-y-auto hidden">
+        </div>
       </div>
     </div>
 
-    <div class="form-group">
-      <%= label_tag :curso_id, "Curso" %>
-      <%= select_tag :curso_id, options_from_collection_for_select(@cursos, :id, :nombre), prompt: "Selecciona un curso", class: "form-control", name: "asignacion[curso_id]" %>
+    <!-- Curso -->
+    <div>
+      <%= label_tag :curso_id, "Curso", class: "block text-sm font-medium text-slate-700 mb-1" %>
+      <%= select_tag :curso_id,
+          options_from_collection_for_select(@cursos, :id, :nombre),
+          prompt: "Selecciona un curso",
+          class: "w-full rounded-md border border-slate-300 focus:ring-2 focus:ring-blue-400 px-3 py-2 text-sm",
+          name: "asignacion[curso_id]" %>
     </div>
 
-    <div class="form-group">
-      <%= label_tag :nota, "Nota" %>
-      <%= number_field_tag :nota, 0, class: "form-control", name: "asignacion[nota]", min: 0, max: 100 %>
+    <!-- Nota -->
+    <div>
+      <%= label_tag :nota, "Nota", class: "block text-sm font-medium text-slate-700 mb-1" %>
+      <%= number_field_tag :nota, 0,
+          class: "w-full rounded-md border border-slate-300 focus:ring-2 focus:ring-blue-400 px-3 py-2 text-sm",
+          name: "asignacion[nota]", min: 0, max: 100 %>
     </div>
 
-    <%= submit_tag "Guardar", class: "btn btn-primary" %>
+    <!-- Botón Guardar -->
+    <%= submit_tag "Guardar",
+        class: "bg-[#4B4376] w-[110px] h-[40px] rounded-[10px] text-[#E8BCB9]" %>
   <% end %>
 
-  <hr>
+  <hr class="border-t border-slate-300 my-4">
 
-  <h3>Asignaciones registradas</h3>
-  <table id="asignaciones-table" border="1" cellpadding="6" cellspacing="0">
-    <thead>
-      <tr>
-        <th>Estudiante</th>
-        <th>Curso</th>
-        <th>Nota</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @asignaciones.each do |a| %>
-        <tr data-id="<%= a.id %>" data-estudiante_id="<%= a.estudiante_id %>" data-curso_id="<%= a.curso_id %>" data-nota="<%= a.nota %>">
-          <td><%= a.estudiante&.nombre_completo %></td>
-          <td><%= a.curso&.nombre %></td>
-          <td><%= a.nota %></td>
-          <td>
-            <button class="btn-edit-asignacion" type="button">Modificar</button>
-            <button class="btn-delete-asignacion" type="button">Eliminar</button>
-          </td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-</div>
-
-<!-- Contenedor 2: Gestión de Cursos y Profesores -->
-<div id="contenedor-2" class="contenedor">
-  <h2>Gestión de Cursos y Profesores</h2>
-  
-  <!-- Sección 1: Cursos -->
-  <div class="seccion-cursos">
-    <h3>Cursos</h3>
-    
-    <%= form_with url: dashboard_guardar_curso_path, local: true, id: 'curso-form' do |f| %>
-      <div class="form-group">
-        <%= label_tag :nombre, "Nombre del Curso" %>
-        <%= text_field_tag :nombre, nil, class: "form-control", name: "curso[nombre]", placeholder: "Ingrese el nombre del curso" %>
-      </div>
-
-      <div class="form-group">
-        <%= label_tag :profesor_id, "Profesor" %>
-        <%= select_tag :profesor_id, options_from_collection_for_select(@profesores, :id, :nombre), prompt: "Selecciona un profesor", class: "form-control", name: "curso[profesor_id]" %>
-      </div>
-
-      <%= submit_tag "Guardar", class: "btn btn-primary" %>
-    <% end %>
-
-    <hr>
-
-    <h4>Lista de Cursos</h4>
-    <table id="cursos-table" border="1" cellpadding="6" cellspacing="0">
+  <h3 class="text-[#432E54] font-semibold text-[24px]">Asignaciones registradas</h3>
+  <div class="overflow-x-auto">
+    <table id="asignaciones-table" class="w-[100%]">
       <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Profesor</th>
-          <th>Acciones</th>
+        <tr class="bg-[#E8BCB9]">
+          <th class="p-[10px] text-[15px]">Estudiante</th>
+          <th class="p-[10px] text-[15px]">Curso</th>
+          <th class="p-[10px] text-[15px]">Nota</th>
+          <th class="p-[10px] text-[15px]">Acciones</th>
         </tr>
       </thead>
       <tbody>
-        <% @cursos.each do |curso| %>
-          <tr data-id="<%= curso.id %>" data-nombre="<%= curso.nombre %>" data-profesor_id="<%= curso.profesor_id %>">
-            <td><%= curso.nombre %></td>
-            <td><%= curso.profesor&.nombre %></td>
-            <td>
-              <button class="btn-edit-curso" type="button">Modificar</button>
-              <button class="btn-delete-curso" type="button">Eliminar</button>
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  </div>
-
-  <hr>
-
-  <!-- Sección 2: Profesores -->
-  <div class="seccion-profesores">
-    <h3>Profesores</h3>
-    
-    <%= form_with url: dashboard_guardar_profesor_path, local: true, id: 'profesor-form' do |f| %>
-      <div class="form-group">
-        <%= label_tag :nombre, "Nombre del Profesor" %>
-        <%= text_field_tag :nombre, nil, class: "form-control", name: "profesor[nombre]", placeholder: "Ingrese el nombre del profesor" %>
-      </div>
-
-      <div class="form-group">
-        <%= label_tag :telefono, "Teléfono" %>
-        <%= text_field_tag :telefono, nil, class: "form-control", name: "profesor[telefono]", placeholder: "Ingrese el teléfono" %>
-      </div>
-
-      <%= submit_tag "Guardar", class: "btn btn-primary" %>
-    <% end %>
-
-    <hr>
-
-    <h4>Lista de Profesores</h4>
-    <table id="profesores-table" border="1" cellpadding="6" cellspacing="0">
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Teléfono</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @profesores.each do |profesor| %>
-          <tr data-id="<%= profesor.id %>" data-nombre="<%= profesor.nombre %>" data-telefono="<%= profesor.telefono %>">
-            <td><%= profesor.nombre %></td>
-            <td><%= profesor.telefono %></td>
-            <td>
-              <button class="btn-edit-profesor" type="button">Modificar</button>
-              <button class="btn-delete-profesor" type="button">Eliminar</button>
+        <% @asignaciones.each do |a| %>
+          <tr data-id="<%= a.id %>"">
+            <td class="text-[13px]"><%= a.estudiante&.nombre_completo %></td>
+            <td class="text-[13px]"><%= a.curso&.nombre %></td>
+            <td class="text-[13px]"><%= a.nota %></td>
+            <td class="flex flex-col gap-[8px] p-[4px]">
+              <button class="btn-edit-asignacion bg-[#E8BCB9] p-[2px] text-[11px]">Modificar</button>
+              <button class="btn-delete-asignacion bg-[#E8BCB9] p-[2px] text-[11px]">Eliminar</button>
             </td>
           </tr>
         <% end %>
@@ -150,56 +81,179 @@
   </div>
 </div>
 
-<!-- Contenedor 3: Gestión de Usuarios -->
-<div id="contenedor-3" class="contenedor">
-  <h2>Gestión de Usuarios</h2>
-  
-  <%= form_with url: dashboard_guardar_usuario_path, local: true, id: 'usuario-form' do |f| %>
-    <div class="form-group">
-      <%= label_tag :nombre, "Nombre del Usuario" %>
-      <%= text_field_tag :nombre, nil, class: "form-control", name: "usuario[nombre]", placeholder: "Ingrese el nombre del usuario" %>
+<!-- CONTENEDOR 2: Gestión de Cursos y Profesores -->
+<div id="contenedor-2" class="space-y-8 bg-white shadow-md rounded-2xl p-6 mb-10">
+  <h2 class="text-[#432E54] font-semibold text-[24px]">Gestión de Cursos y Profesores</h2>
+
+  <!-- CURSOS -->
+  <div class="space-y-4">
+    <h3 class="text-[#432E54] font-semibold text-[24px]">Cursos</h3>
+
+    <%= form_with url: dashboard_guardar_curso_path, local: true, id: 'curso-form', class: "space-y-4" do |f| %>
+      <div>
+        <%= label_tag :nombre, "Nombre del Curso", class: "block text-sm font-medium text-slate-700 mb-1" %>
+        <%= text_field_tag :nombre, nil,
+            class: "w-full rounded-md border border-slate-300 focus:ring-2 focus:ring-blue-400 px-3 py-2 text-sm",
+            name: "curso[nombre]", placeholder: "Ingrese el nombre del curso" %>
+      </div>
+
+      <div>
+        <%= label_tag :profesor_id, "Profesor", class: "block text-sm font-medium text-slate-700 mb-1" %>
+        <%= select_tag :profesor_id,
+            options_from_collection_for_select(@profesores, :id, :nombre),
+            prompt: "Selecciona un profesor",
+            class: "w-full rounded-md border border-slate-300 focus:ring-2 focus:ring-blue-400 px-3 py-2 text-sm",
+            name: "curso[profesor_id]" %>
+      </div>
+
+      <%= submit_tag "Guardar",
+          class: "bg-[#4B4376] w-[110px] h-[40px] rounded-[10px] text-[#E8BCB9]" %>
+    <% end %>
+
+    <hr class="border-t border-slate-300">
+
+    <h4 class="text-[#432E54] font-semibold text-[24px]">Lista de Cursos</h4>
+    <div class="overflow-x-auto">
+      <table id="cursos-table" class="w-[100%]">
+        <thead class="bg-[#E8BCB9]">
+          <tr>
+            <th class="p-[10px] text-[15px]">Nombre</th>
+            <th class="p-[10px] text-[15px]">Profesor</th>
+            <th class="p-[10px] text-[15px]">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @cursos.each do |curso| %>
+            <tr class="hover:bg-slate-50">
+              <td class="text-[13px]"><%= curso.nombre %></td>
+              <td class="text-[13px]"><%= curso.profesor&.nombre %></td>
+              <td class="flex flex-col gap-[8px] p-[4px]">
+                <button class="btn-edit-asignacion bg-[#E8BCB9] p-[2px] text-[11px]">Modificar</button>
+                <button class="btn-edit-asignacion bg-[#E8BCB9] p-[2px] text-[11px]">Eliminar</button>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <hr class="border-t border-slate-300">
+
+  <!-- PROFESORES -->
+  <div class="space-y-4">
+    <h3 class="text-[#432E54] font-semibold text-[24px]">Profesores</h3>
+
+    <%= form_with url: dashboard_guardar_profesor_path, local: true, id: 'profesor-form', class: "space-y-4" do |f| %>
+      <div>
+        <%= label_tag :nombre, "Nombre del Profesor", class: "block text-sm font-medium text-slate-700 mb-1" %>
+        <%= text_field_tag :nombre, nil,
+            class: "w-full rounded-md border border-slate-300 focus:ring-2 focus:ring-blue-400 px-3 py-2 text-sm",
+            name: "profesor[nombre]", placeholder: "Ingrese el nombre del profesor" %>
+      </div>
+
+      <div>
+        <%= label_tag :telefono, "Teléfono", class: "block text-sm font-medium text-slate-700 mb-1" %>
+        <%= text_field_tag :telefono, nil,
+            class: "w-full rounded-md border border-slate-300 focus:ring-2 focus:ring-blue-400 px-3 py-2 text-sm",
+            name: "profesor[telefono]", placeholder: "Ingrese el teléfono" %>
+      </div>
+
+      <%= submit_tag "Guardar",
+          class: "bg-[#4B4376] w-[110px] h-[40px] rounded-[10px] text-[#E8BCB9]" %>
+    <% end %>
+
+    <hr class="border-t border-slate-300">
+
+    <h4 class="text-[#432E54] font-semibold text-[24px]">Lista de Profesores</h4>
+    <div class="overflow-x-auto">
+      <table id="profesores-table" class="w-[100%]">
+        <thead>
+          <tr class="bg-[#E8BCB9]">
+            <th class="p-[10px] text-[15px]">Nombre</th>
+            <th class="p-[10px] text-[15px]">Teléfono</th>
+            <th class="p-[10px] text-[15px]">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @profesores.each do |profesor| %>
+            <tr class="hover:bg-slate-50">
+              <td class="text-[13px]"><%= profesor.nombre %></td>
+              <td class="text-[13px]"><%= profesor.telefono %></td>
+              <td class="flex flex-col gap-[8px] p-[4px]">
+                <button class="btn-edit-profesor bg-[#E8BCB9] p-[2px] text-[11px]">Modificar</button>
+                <button class="btn-delete-profesor bg-[#E8BCB9] p-[2px] text-[11px]">Eliminar</button>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- CONTENEDOR 3: Gestión de Usuarios -->
+<div id="contenedor-3" class="space-y-8 bg-white shadow-md rounded-2xl p-6">
+  <h2 class="text-[#432E54] font-semibold text-[24px]">Gestión de Usuarios</h2>
+
+  <%= form_with url: dashboard_guardar_usuario_path, local: true, id: 'usuario-form', class: "space-y-4" do |f| %>
+    <div>
+      <%= label_tag :nombre, "Nombre del Usuario", class: "block text-sm font-medium text-slate-700 mb-1" %>
+      <%= text_field_tag :nombre, nil,
+          class: "w-full rounded-md border border-slate-300 focus:ring-2 focus:ring-blue-400 px-3 py-2 text-sm",
+          name: "usuario[nombre]", placeholder: "Ingrese el nombre del usuario" %>
     </div>
 
-    <div class="form-group">
-      <%= label_tag :contraseña, "Contraseña" %>
-      <%= text_field_tag :contraseña, nil, class: "form-control", name: "usuario[contraseña]", placeholder: "Ingrese la contraseña" %>
+    <div>
+      <%= label_tag :contraseña, "Contraseña", class: "block text-sm font-medium text-slate-700 mb-1" %>
+      <%= text_field_tag :contraseña, nil,
+          class: "w-full rounded-md border border-slate-300 focus:ring-2 focus:ring-blue-400 px-3 py-2 text-sm",
+          name: "usuario[contraseña]", placeholder: "Ingrese la contraseña" %>
     </div>
 
-    <div class="form-group">
-      <%= label_tag :rol_id, "Rol" %>
-      <%= select_tag :rol_id, options_from_collection_for_select(@roles, :id, :nombre), prompt: "Selecciona un rol", class: "form-control", name: "usuario[rol_id]" %>
+    <div>
+      <%= label_tag :rol_id, "Rol", class: "block text-sm font-medium text-slate-700 mb-1" %>
+      <%= select_tag :rol_id,
+          options_from_collection_for_select(@roles, :id, :nombre),
+          prompt: "Selecciona un rol",
+          class: "w-full rounded-md border border-slate-300 focus:ring-2 focus:ring-blue-400 px-3 py-2 text-sm",
+          name: "usuario[rol_id]" %>
     </div>
 
-    <%= submit_tag "Guardar", class: "btn btn-primary" %>
+    <%= submit_tag "Guardar",
+        class: "bg-[#4B4376] w-[110px] h-[40px] rounded-[10px] text-[#E8BCB9]" %>
   <% end %>
 
-  <hr>
+  <hr class="border-t border-slate-300">
 
-  <h4>Lista de Usuarios</h4>
-  <table id="usuarios-table" border="1" cellpadding="6" cellspacing="0">
-    <thead>
-      <tr>
-        <th>Nombre</th>
-        <th>Contraseña</th>
-        <th>Rol</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @usuarios.each do |usuario| %>
-        <tr data-id="<%= usuario.id %>" data-nombre="<%= usuario.nombre %>" data-rol_id="<%= usuario.rol_id %>">
-          <td><%= usuario.nombre %></td>
-          <td><%= usuario.contraseña %></td>
-          <td><%= usuario.rol&.nombre %></td>
-          <td>
-            <button class="btn-edit-usuario" type="button">Modificar</button>
-            <button class="btn-delete-usuario" type="button">Eliminar</button>
-          </td>
+  <h4 class="text-[#432E54] font-semibold text-[24px]">Lista de Usuarios</h4>
+  <div class="overflow-x-auto">
+    <table id="usuarios-table" class="">
+      <thead>
+        <tr class="bg-[#E8BCB9]"> 
+          <th class="p-[10px] text-[15px]">Nombre</th>
+          <th class="p-[10px] text-[15px]">Contraseña</th>
+          <th class="p-[10px] text-[15px]">Rol</th>
+          <th class="p-[10px] text-[15px]">Acciones</th>
         </tr>
-      <% end %>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        <% @usuarios.each do |usuario| %>
+          <tr class="hover:bg-slate-50">
+            <td class="text-[13px]"><%= usuario.nombre %></td>
+            <td class="text-[13px]"><%= usuario.contraseña %></td>
+            <td class="text-[13px]"><%= usuario.rol&.nombre %></td>
+            <td class="flex flex-col gap-[8px] p-[4px]">
+              <button class="btn-edit-usuario bg-[#E8BCB9] p-[2px] text-[11px]">Modificar</button>
+              <button class="btn-delete-usuario bg-[#E8BCB9] p-[2px] text-[11px]">Eliminar</button>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 </div>
+
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {

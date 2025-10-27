@@ -1,116 +1,143 @@
-<h2>Consultas</h2>
+<h2 class="text-2xl font-bold text-slate-800 mb-4 bg-[#E8BCB9] flex items-center h-[100px] p-[10px]">Consultas</h2>
 
-<div id="consultas" class="consultas">
+<div id="consultas" class="space-y-8 p-[15px]">
 
-  <div class="seccion" id="datos-estudiante">
-    <h3>Datos del Estudiante</h3>
-    <div class="grid" style="display: grid; grid-template-columns: repeat(2, minmax(220px, 380px)); gap: 12px; max-width: 780px;">
-      <div class="relative" style="position: relative;">
-        <label for="estudiante-nombre">Nombre</label>
-        <input type="text" id="estudiante-nombre" class="form-control" placeholder="Escribe para buscar...">
-        <div id="consulta-suggestions" style="position: absolute; top: 100%; left: 0; width: 80%; background: white; border: 1px solid #ddd; border-top: none; border-radius: 0 0 4px 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 9999; max-height: 240px; overflow-y: auto; display: none;"></div>
+  <!-- Datos del Estudiante -->
+  <div id="datos-estudiante" class="space-y-4">
+    <h3 class="text-[#432E54] font-semibold text-[24px]">Datos del Estudiante</h3>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-[780px] p-[20px]">
+
+      <!-- Nombre -->
+      <div class="relative">
+        <label for="estudiante-nombre" class="block text-sm font-medium text-slate-700 mb-1">Nombre</label>
+        <input type="text" id="estudiante-nombre"
+               class="w-full rounded-md border border-slate-300 focus:ring-2 focus:ring-blue-400 focus:outline-none px-3 py-2 text-sm"
+               placeholder="Escribe para buscar...">
+
+        <div id="consulta-suggestions"
+             class="absolute top-full left-0 w-4/5 bg-white border border-slate-300 border-t-0 rounded-b-md shadow-lg z-50 max-h-60 overflow-y-auto hidden">
+        </div>
       </div>
+
+      <!-- Institución -->
       <div>
-        <label>Institución</label>
-        <input type="text" id="estudiante-institucion" class="form-control" readonly>
+        <label class="block text-sm font-medium text-slate-700 mb-1">Institución</label>
+        <input type="text" id="estudiante-institucion"
+               class="w-full rounded-md border border-slate-300 bg-slate-50 px-3 py-2 text-sm" readonly>
       </div>
+
+      <!-- Grado -->
       <div>
-        <label>Grado</label>
-        <input type="text" id="estudiante-grado" class="form-control" readonly>
+        <label class="block text-sm font-medium text-slate-700 mb-1">Grado</label>
+        <input type="text" id="estudiante-grado"
+               class="w-full rounded-md border border-slate-300 bg-slate-50 px-3 py-2 text-sm" readonly>
       </div>
+
+      <!-- Teléfono -->
       <div>
-        <label>Teléfono</label>
-        <input type="text" id="estudiante-telefono" class="form-control" readonly>
+        <label class="block text-sm font-medium text-slate-700 mb-1">Teléfono</label>
+        <input type="text" id="estudiante-telefono"
+               class="w-full rounded-md border border-slate-300 bg-slate-50 px-3 py-2 text-sm" readonly>
       </div>
     </div>
   </div>
 
-  <hr>
 
-  <div class="seccion" id="estado-solvencia">
-    <h3>Estado Solvencia</h3>
-    <div style="overflow-x: auto;">
-      <table id="solvencia-table" border="1" cellpadding="6" cellspacing="0" style="min-width: 860px;">
-        <thead>
+  <!-- Estado Solvencia -->
+  <div id="estado-solvencia" class="space-y-4">
+    <h3 class="text-[#432E54] font-semibold text-[24px]">Estado Solvencia</h3>
+
+    <div class="overflow-x-auto overflow-y-auto w-[100%] h-[100px] p-[15px]">
+      <table id="solvencia-table" class="min-w-[860px] border border-slate-300 text-sm text-slate-700">
+        <thead class="bg-slate-100 text-slate-800 font-semibold">
           <tr>
-            <th>Inscripcion</th>
-            <th>Enero</th>
-            <th>Febrero</th>
-            <th>Marzo</th>
-            <th>Abril</th>
-            <th>Mayo</th>
-            <th>Junio</th>
-            <th>Julio</th>
-            <th>Agosto</th>
-            <th>Septiembre</th>
-            <th>Octubre</th>
-            <th>Noviembre</th>
+            <th class="border border-slate-300 px-3 py-2">Inscripción</th>
+            <th class="border border-slate-300 px-3 py-2">Enero</th>
+            <th class="border border-slate-300 px-3 py-2">Febrero</th>
+            <th class="border border-slate-300 px-3 py-2">Marzo</th>
+            <th class="border border-slate-300 px-3 py-2">Abril</th>
+            <th class="border border-slate-300 px-3 py-2">Mayo</th>
+            <th class="border border-slate-300 px-3 py-2">Junio</th>
+            <th class="border border-slate-300 px-3 py-2">Julio</th>
+            <th class="border border-slate-300 px-3 py-2">Agosto</th>
+            <th class="border border-slate-300 px-3 py-2">Septiembre</th>
+            <th class="border border-slate-300 px-3 py-2">Octubre</th>
+            <th class="border border-slate-300 px-3 py-2">Noviembre</th>
           </tr>
         </thead>
         <tbody>
-          <tr id="solvencia-valores">
-            <td data-concepto="Inscripcion"></td>
-            <td data-concepto="Enero"></td>
-            <td data-concepto="Febrero"></td>
-            <td data-concepto="Marzo"></td>
-            <td data-concepto="Abril"></td>
-            <td data-concepto="Mayo"></td>
-            <td data-concepto="Junio"></td>
-            <td data-concepto="Julio"></td>
-            <td data-concepto="Agosto"></td>
-            <td data-concepto="Septiembre"></td>
-            <td data-concepto="Octubre"></td>
-            <td data-concepto="Noviembre"></td>
+          <tr id="solvencia-valores" class="text-center">
+            <td data-concepto="Inscripcion" class="border border-slate-300 px-3 py-2"></td>
+            <td data-concepto="Enero" class="border border-slate-300 px-3 py-2"></td>
+            <td data-concepto="Febrero" class="border border-slate-300 px-3 py-2"></td>
+            <td data-concepto="Marzo" class="border border-slate-300 px-3 py-2"></td>
+            <td data-concepto="Abril" class="border border-slate-300 px-3 py-2"></td>
+            <td data-concepto="Mayo" class="border border-slate-300 px-3 py-2"></td>
+            <td data-concepto="Junio" class="border border-slate-300 px-3 py-2"></td>
+            <td data-concepto="Julio" class="border border-slate-300 px-3 py-2"></td>
+            <td data-concepto="Agosto" class="border border-slate-300 px-3 py-2"></td>
+            <td data-concepto="Septiembre" class="border border-slate-300 px-3 py-2"></td>
+            <td data-concepto="Octubre" class="border border-slate-300 px-3 py-2"></td>
+            <td data-concepto="Noviembre" class="border border-slate-300 px-3 py-2"></td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <div id="solvencia-indicador" style="margin-top: 12px; padding: 10px 12px; border-radius: 6px; font-weight: 600; color: #0f172a; display: inline-block;">
+    <div id="solvencia-indicador"
+         class="text-[#48e]">
       Selecciona un estudiante para ver el estado de solvencia
     </div>
   </div>
 
-  <hr>
+  <hr class="border-t border-slate-300">
 
-  <div class="seccion" id="informacion-academica">
-    <h3>Información Académica</h3>
+  <!-- Información Académica -->
+  <div id="informacion-academica" class="space-y-6">
+    <h3 class="text-[#432E54] font-semibold text-[24px]">Información Académica</h3>
 
-    <div class="subseccion" id="solvencia-examenes" style="margin-top: 12px;">
-      <h4>Solvencia Exámenes</h4>
-      <table id="examenes-table" border="1" cellpadding="6" cellspacing="0" style="min-width: 420px;">
-        <thead>
+    <!-- Solvencia Exámenes -->
+    <div id="solvencia-examenes">
+      <h4 class="text-[#432E54] font-semibold text-[18px]">Solvencia Exámenes</h4>
+     <div class="p-[15px]">
+      <table id="examenes-table" class="w-[100%]">
+        <thead class="bg-slate-100">
           <tr>
-            <th>Concepto</th>
-            <th>Estado</th>
+            <th class="border border-slate-300 px-3 py-2">Concepto</th>
+            <th class="border border-slate-300 px-3 py-2">Estado</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td>Papeleria</td><td data-examen="Papeleria"></td></tr>
-          <tr><td>Examen 1</td><td data-examen="Examen uno"></td></tr>
-          <tr><td>Examen 2</td><td data-examen="Examen dos"></td></tr>
-          <tr><td>Examen 3</td><td data-examen="Examen tres"></td></tr>
-          <tr><td>Examen 4</td><td data-examen="Examen cuatro"></td></tr>
+          <tr><td class="border border-slate-300 px-3 py-2">Papelería</td><td data-examen="Papeleria" class="border border-slate-300 px-3 py-2"></td></tr>
+          <tr><td class="border border-slate-300 px-3 py-2">Examen 1</td><td data-examen="Examen uno" class="border border-slate-300 px-3 py-2"></td></tr>
+          <tr><td class="border border-slate-300 px-3 py-2">Examen 2</td><td data-examen="Examen dos" class="border border-slate-300 px-3 py-2"></td></tr>
+          <tr><td class="border border-slate-300 px-3 py-2">Examen 3</td><td data-examen="Examen tres" class="border border-slate-300 px-3 py-2"></td></tr>
+          <tr><td class="border border-slate-300 px-3 py-2">Examen 4</td><td data-examen="Examen cuatro" class="border border-slate-300 px-3 py-2"></td></tr>
         </tbody>
       </table>
+     </div>
     </div>
 
-    <div class="subseccion" id="notas-asignaciones" style="margin-top: 16px;">
-      <h4>Notas y Asignaciones</h4>
-      <table id="asignaciones-notas-table" border="1" cellpadding="6" cellspacing="0" style="min-width: 520px;">
-        <thead>
+    <!-- Notas y Asignaciones -->
+    <div id="notas-asignaciones" class="space-y-2">
+      <h4 class="text-[#432E54] font-semibold text-[18px]">Notas y Asignaciones</h4>
+      <div class="overflow-x-auto w-[100%] h-[200px] p-[15px]">
+        <table id="asignaciones-notas-table" class="w-[100%]">
+        <thead class="bg-slate-100">
           <tr>
-            <th>Curso</th>
-            <th>Nota</th>
+            <th class="border border-slate-300 px-3 py-2">Curso</th>
+            <th class="border border-slate-300 px-3 py-2">Nota</th>
           </tr>
         </thead>
-        <tbody>
-        </tbody>
+        <tbody></tbody>
       </table>
-      <div id="promedio-notas" style="margin-top: 8px; font-weight: 600;">Promedio: -</div>
+      </div>
+      <div id="promedio-notas" class="text-[#432E54] font-semibold text-[24px]">Promedio: -</div>
     </div>
   </div>
 </div>
+
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
