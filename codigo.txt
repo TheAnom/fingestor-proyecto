@@ -1,0 +1,34 @@
+Correr los siguientes comandos en la terminal:
+
+rails db:migrate
+
+rails console
+
+Rol.create(nombre: "administrador")
+Rol.create(nombre: "suplente")
+Rol.create(nombre: "consultor")
+
+Usuario.create(nombre: "admin", contraseña: "admin", rol_id: 1)
+
+Grado.create(nombre: "Primero Basico")
+Grado.create(nombre: "Segundo Basico")
+Grado.create(nombre: "Tercero Basico")
+Grado.create(nombre: "Libre")
+
+ConceptoPago.create(nombre: "Inscripcion")
+ConceptoPago.create(nombre: "Papeleria")
+ConceptoPago.create(nombre: "Enero")
+ConceptoPago.create(nombre: "Febrero")
+ConceptoPago.create(nombre: "Marzo")
+ConceptoPago.create(nombre: "Abril")
+ConceptoPago.create(nombre: "Mayo")
+ConceptoPago.create(nombre: "Junio")
+ConceptoPago.create(nombre: "Julio")
+ConceptoPago.create(nombre: "Agosto")
+ConceptoPago.create(nombre: "Septiembre")
+ConceptoPago.create(nombre: "Octubre")
+ConceptoPago.create(nombre: "Noviembre")
+ConceptoPago.create(nombre: "Examen uno")
+ConceptoPago.create(nombre: "Examen dos")
+ConceptoPago.create(nombre: "Examen tres")
+ConceptoPago.create(nombre: "Examen cuatro")
