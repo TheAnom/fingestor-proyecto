@@ -1,137 +1,141 @@
-<h1>Registrar / Actualizar Estudiante</h1>
+<h1 class="bg-[#E8BCB9] font-bold text-lg sm:text-xl md:text-2xl p-4 sm:p-5 h-24 flex items-center justify-center">
+  Registrar / Actualizar Estudiante
+</h1>
 
-<%= form_with model: (@estudiante || Estudiante.new), url: dashboard_ingresos_path, local: true, id: 'estudiante-form' do |f| %>
-  <% if (@estudiante || Estudiante.new).respond_to?(:errors) && (@estudiante || Estudiante.new).errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize((@estudiante || Estudiante.new).errors.count, "error") %> impidieron guardar el estudiante:</h2>
-      <ul>
-        <% (@estudiante || Estudiante.new).errors.full_messages.each do |msg| %>
-          <li><%= msg %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
-
-  <p>
-    <%= f.label :nombre_completo, "Nombre completo" %><br>
-    <%= f.text_field :nombre_completo, required: true %>
-  </p>
-
-  <p>
-    <%= f.label :telefono, "Teléfono" %><br>
-    <%= f.telephone_field :telefono %>
-  </p>
-
-  <p>
-    <%= f.label :grado_id, "Grado" %><br>
-    <%= f.collection_select :grado_id, Grado.all.order(:nombre), :id, :nombre, prompt: "Selecciona un grado" %>
-  </p>
-
-  <p>
-    <%= f.label :institucion, "Institución" %><br>
-    <%= f.text_field :institucion %>
-  </p>
-
-  <p>
-    <%= f.submit "Guardar", class: "btn btn-primary" %>
-  </p>
-<% end %>
-
-<hr>
-
-<div id="pago-container">
-  <h2>Registrar Pago</h2>
-  <p>Estudiante seleccionado: <span id="estudiante-seleccionado">(ninguno)</span></p>
-  <%= form_with url: dashboard_guardar_pago_path, local: true do |f| %>
-    <%= hidden_field_tag :estudiante_id, nil, id: "pago_estudiante_id" %>
+<div class="p-4 sm:p-6">
+  <%= form_with model: (@estudiante || Estudiante.new), url: dashboard_ingresos_path, local: true, id: 'estudiante-form', class: "space-y-4" do |f| %>
+    <% if (@estudiante || Estudiante.new).respond_to?(:errors) && (@estudiante || Estudiante.new).errors.any? %>
+      <div id="error_explanation" class="bg-red-100 border border-red-400 text-red-700 p-3 rounded">
+        <h2 class="font-semibold mb-2"><%= pluralize((@estudiante || Estudiante.new).errors.count, "error") %> impidieron guardar el estudiante:</h2>
+        <ul class="list-disc pl-5">
+          <% (@estudiante || Estudiante.new).errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
 
     <p>
-      <%= label_tag :concepto_pago_id, "Concepto" %><br>
-      <%= select_tag :concepto_pago_id, options_from_collection_for_select(@conceptos, :id, :nombre), prompt: "Selecciona un concepto" %>
+      <%= f.label :nombre_completo, "Nombre completo", class: "block font-semibold mb-1" %>
+      <%= f.text_field :nombre_completo, required: true, class: "w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300" %>
     </p>
 
     <p>
-      <%= label_tag :monto, "Monto" %><br>
-      <%= number_field_tag :monto, nil, step: 0.01 %>
+      <%= f.label :telefono, "Teléfono", class: "block font-semibold mb-1" %>
+      <%= f.telephone_field :telefono, class: "w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300" %>
     </p>
 
     <p>
-      <%= submit_tag "Guardar Pago", class: "btn btn-primary", id: 'pago-submit' %>
+      <%= f.label :grado_id, "Grado", class: "block font-semibold mb-1" %>
+      <%= f.collection_select :grado_id, Grado.all.order(:nombre), :id, :nombre, {prompt: "Selecciona un grado"} %>
+    </p>
+
+    <p>
+      <%= f.label :institucion, "Institución", class: "block font-semibold mb-1" %>
+      <%= f.text_field :institucion %>
+    </p>
+
+    <p>
+      <%= f.submit "Guardar", class: "bg-pink-400 hover:bg-pink-500 text-white font-semibold py-2 px-4 rounded transition-colors duration-200" %>
     </p>
   <% end %>
 </div>
 
-<hr>
+<hr class="my-6 border-gray-300">
 
-<!-- Contenedor unificado para las tablas -->
-<div id="tablas-container">
-  <!-- Input de búsqueda -->
-  <div class="search-container">
-    <input type="text" id="search-input" placeholder="Buscar..." class="search-input">
+<div id="pago-container" class="p-4 sm:p-6">
+  <h2 class="text-lg font-semibold mb-2">Registrar Pago</h2>
+  <!--<p class="mb-4">Estudiante seleccionado: <span id="estudiante-seleccionado" class="font-medium">(ninguno)</span></p>-->
+
+  <%= form_with url: dashboard_guardar_pago_path, local: true, class: "space-y-4" do |f| %>
+    <%= hidden_field_tag :estudiante_id, nil, id: "pago_estudiante_id" %>
+
+    <p>
+      <%= label_tag :concepto_pago_id, "Concepto", class: "block font-semibold mb-1" %>
+      <%= select_tag :concepto_pago_id, options_from_collection_for_select(@conceptos, :id, :nombre), {prompt: "Selecciona un concepto"}%>
+    </p>
+
+    <p>
+      <%= label_tag :monto, "Monto", class: "block font-semibold mb-1" %>
+      <%= number_field_tag :monto, nil, step: 0.01, class: "w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300" %>
+    </p>
+
+    <p>
+      <%= submit_tag "Guardar Pago", class: "bg-pink-400 hover:bg-pink-500 text-white font-semibold py-2 px-4 rounded transition-colors duration-200", id: 'pago-submit' %>
+    </p>
+  <% end %>
+</div>
+
+<hr class="my-6 border-gray-300">
+
+<div id="tablas-container" class="p-4 sm:p-6">
+  <div class="search-container mb-4">
+    <input type="text" id="search-input" placeholder="Buscar..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300">
   </div>
 
-  <!-- Contenedor de las tablas -->
-  <div class="tables-wrapper">
+  <div class="tables-wrapper overflow-x-auto">
     <!-- Tabla de Estudiantes -->
-    <div class="table-section">
-      <h2>Estudiantes registrados</h2>
-      <table id="estudiantes-table" border="1" cellpadding="6" cellspacing="0">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Teléfono</th>
-            <th>Grado</th>
-            <th>Institución</th>
-            <th>Acciones</th>
+    <div class="table-section mb-6">
+      <h2 class="text-lg font-semibold mb-2">Estudiantes registrados</h2>
+      <div class="overflow-y-auto overflow-x-auto h-[300px]">
+      <table id="estudiantes-table" class="min-w-full text-sm">
+        <thead class="bg-gray-100 text-left">
+          <tr class="bg-[#E8BCB9]">
+            <th class="text-[15px] p-[5px]">Nombre</th>
+            <th class="text-[15px] p-[5px]">Teléfono</th>
+            <th class="text-[15px] p-[5px]">Grado</th>
+            <th class="text-[15px] p-[5px]">Institución</th>
+            <th class="text-[15px] p-[5px]">Acciones</th>
           </tr>
         </thead>
         <tbody>
           <% @estudiantes.each do |e| %>
-            <tr data-id="<%= e.id %>" data-nombre="<%= j e.nombre_completo %>" data-telefono="<%= j e.telefono %>" data-grado_id="<%= e.grado_id %>" data-institucion="<%= j e.institucion %>">
-              <td><%= e.nombre_completo %></td>
-              <td><%= e.telefono %></td>
-              <td><%= e.grado&.nombre %></td>
-              <td><%= e.institucion %></td>
-              <td>
-                <button class="btn-edit" type="button">Modificar</button>
-                <button class="btn-delete" type="button">Eliminar</button>
+            <tr data-id="<%= e.id %>" data-nombre="<%= j e.nombre_completo %>" data-telefono="<%= j e.telefono %>" data-grado_id="<%= e.grado_id %>" data-institucion="<%= j e.institucion %>" class="hover:bg-gray-50 cursor-pointer">
+              <td class="text-[13px]"><%= e.nombre_completo %></td>
+              <td class="text-[13px]"><%= e.telefono %></td>
+              <td class="text-[13px]"><%= e.grado&.nombre %></td>
+              <td class="text-[13px]"><%= e.institucion %></td>
+              <td class="flex flex-col gap-[8px] p-[4px]">
+                <button class="btn-edit bg-[#E8BCB9] p-[2px] text-[11px]">Modificar</button>
+                <button class="btn-delete bg-[#E8BCB9] p-[2px] text-[11px]">Eliminar</button>
               </td>
             </tr>
           <% end %>
         </tbody>
-      </table>
+      </table></div>
     </div>
 
     <!-- Tabla de Pagos -->
     <div class="table-section">
-      <h2>Pagos registrados</h2>
-      <table id="pagos-table" border="1" cellpadding="6" cellspacing="0">
-        <thead>
+      <h2 class="text-lg font-semibold mb-2">Pagos registrados</h2>
+      <div class="overflow-y-auto overflow-x-auto h-[400px]">
+      <table id="pagos-table" class="min-w-full border border-gray-200 text-sm">
+        <thead class="bg-[#E8BCB9] text-left">
           <tr>
-            <th>Concepto</th>
-            <th>Estudiante</th>
-            <th>Usuario</th>
-            <th>Monto</th>
-            <th>Fecha</th>
-            <th>Acciones</th>
+            <th class="p-[5px]">Concepto</th>
+            <th class="p-[5px]">Estudiante</th>
+            <th class="p-[5px]">Usuario</th>
+            <th class="p-[5px]">Monto</th>
+            <th class="p-[5px]">Fecha</th>
+            <th class="p-[5px]">Acciones</th>
           </tr>
         </thead>
         <tbody>
           <% @pagos.each do |p| %>
-            <tr data-id="<%= p.id %>" data-concepto_id="<%= p.concepto_pago_id %>" data-estudiante_id="<%= p.estudiante_id %>" data-monto="<%= p.monto %>">
-              <td><%= p.concepto_pago&.nombre %></td>
-              <td><%= p.estudiante&.nombre_completo %></td>
-              <td><%= p.usuario&.nombre %></td>
-              <td><%= p.monto %></td>
-              <td><%= p.fecha %></td>
-              <td>
-                <button class="btn-edit-pago" type="button">Modificar</button>
-                <button class="btn-delete-pago" type="button">Eliminar</button>
+            <tr data-id="<%= p.id %>" data-concepto_id="<%= p.concepto_pago_id %>" data-estudiante_id="<%= p.estudiante_id %>" data-monto="<%= p.monto %>" class="hover:bg-gray-50 cursor-pointer">
+              <td class="text-[15px]"><%= p.concepto_pago&.nombre %></td>
+              <td class="text-[15px]"><%= p.estudiante&.nombre_completo %></td>
+              <td class="text-[15px]"><%= p.usuario&.nombre %></td>
+              <td class="text-[15px]"><%= p.monto %></td>
+              <td class="text-[15px]"><%= p.fecha %></td>
+              <td class="flex flex-col gap-[8px] p-[4px]">
+               <button class="btn-edit-pago bg-[#E8BCB9] p-[2px] text-[11px]">Modificar</button>
+                <button class="btn-delete-pago bg-[#E8BCB9] p-[2px] text-[11px]">Eliminar</button>
               </td>
             </tr>
           <% end %>
         </tbody>
-      </table>
+      </table></div>
     </div>
   </div>
 </div>
