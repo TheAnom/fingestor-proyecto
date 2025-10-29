@@ -1,8 +1,10 @@
-<h1 class="bg-[#E8BCB9] font-bold text-lg sm:text-xl md:text-2xl p-4 sm:p-5 h-24 flex items-center justify-center">
+<h1 class="bg-[#AE445A] font-bold text-lg sm:text-xl md:text-2xl p-4 sm:p-5 h-24 flex items-center justify-center">
   Registrar / Actualizar Estudiante
 </h1>
+<div class="lg:grid grid-cols-2 grid-row">
 
-<div class="p-4 sm:p-6">
+
+<div class="p-4 sm:p-6 bg-[#E8BCB9] m-[20px] rounded-[10px]">
   <%= form_with model: (@estudiante || Estudiante.new), url: dashboard_ingresos_path, local: true, id: 'estudiante-form', class: "space-y-4" do |f| %>
     <% if (@estudiante || Estudiante.new).respond_to?(:errors) && (@estudiante || Estudiante.new).errors.any? %>
       <div id="error_explanation" class="bg-red-100 border border-red-400 text-red-700 p-3 rounded">
@@ -16,23 +18,25 @@
     <% end %>
 
     <p>
-      <%= f.label :nombre_completo, "Nombre completo", class: "block font-semibold mb-1" %>
-      <%= f.text_field :nombre_completo, required: true, class: "w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300" %>
+      <%= f.text_field :nombre_completo, required: true, placeholder: "Nombre", class: "w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300" %>
     </p>
 
     <p>
-      <%= f.label :telefono, "Teléfono", class: "block font-semibold mb-1" %>
-      <%= f.telephone_field :telefono, class: "w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300" %>
+      <%= f.telephone_field :telefono, placeholder: "Telefono",class: "w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300" %>
     </p>
 
     <p>
-      <%= f.label :grado_id, "Grado", class: "block font-semibold mb-1" %>
-      <%= f.collection_select :grado_id, Grado.all.order(:nombre), :id, :nombre, {prompt: "Selecciona un grado"} %>
+      <%= f.collection_select :grado_id,
+  Grado.all.order(:nombre),
+  :id,
+  :nombre,
+  { prompt: "Grado" },
+  { class: "w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700" } %>
+
     </p>
 
     <p>
-      <%= f.label :institucion, "Institución", class: "block font-semibold mb-1" %>
-      <%= f.text_field :institucion %>
+      <%= f.text_field :institucion, placeholder: "Institución", class: "w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300" %>
     </p>
 
     <p>
@@ -41,9 +45,7 @@
   <% end %>
 </div>
 
-<hr class="my-6 border-gray-300">
-
-<div id="pago-container" class="p-4 sm:p-6">
+<div id="pago-container" class="p-4 sm:p-6 bg-[#E8BCB9] m-[20px] rounded-[10px]">
   <h2 class="text-lg font-semibold mb-2">Registrar Pago</h2>
   <!--<p class="mb-4">Estudiante seleccionado: <span id="estudiante-seleccionado" class="font-medium">(ninguno)</span></p>-->
 
@@ -51,13 +53,15 @@
     <%= hidden_field_tag :estudiante_id, nil, id: "pago_estudiante_id" %>
 
     <p>
-      <%= label_tag :concepto_pago_id, "Concepto", class: "block font-semibold mb-1" %>
-      <%= select_tag :concepto_pago_id, options_from_collection_for_select(@conceptos, :id, :nombre), {prompt: "Selecciona un concepto"}%>
+      <%= select_tag :concepto_pago_id,
+  options_from_collection_for_select(@conceptos, :id, :nombre),
+  prompt: "Selecciona un concepto",
+  class: "w-full p-2 border border-gray-300 rounded-lg text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+
     </p>
 
     <p>
-      <%= label_tag :monto, "Monto", class: "block font-semibold mb-1" %>
-      <%= number_field_tag :monto, nil, step: 0.01, class: "w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300" %>
+      <%= number_field_tag :monto, nil, step: 0.01, placeholder: "Monto", class: "w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300" %>
     </p>
 
     <p>
@@ -66,11 +70,10 @@
   <% end %>
 </div>
 
-<hr class="my-6 border-gray-300">
 
 <div id="tablas-container" class="p-4 sm:p-6">
   <div class="search-container mb-4">
-    <input type="text" id="search-input" placeholder="Buscar..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300">
+    <input type="text" id="search-input" placeholder="Buscar..." class="w-full border border-[#432E54] border-[2px] rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300">
   </div>
 
   <div class="tables-wrapper overflow-x-auto">
@@ -106,7 +109,11 @@
     </div>
 
     <!-- Tabla de Pagos -->
-    <div class="table-section">
+    
+  </div>
+</div>
+
+<div class="table-section">
       <h2 class="text-lg font-semibold mb-2">Pagos registrados</h2>
       <div class="overflow-y-auto overflow-x-auto h-[400px]">
       <table id="pagos-table" class="min-w-full border border-gray-200 text-sm">
@@ -137,7 +144,7 @@
         </tbody>
       </table></div>
     </div>
-  </div>
+
 </div>
 
 <script>

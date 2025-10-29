@@ -4,13 +4,14 @@
   }
 </style>
 
-<h1 class="text-2xl font-bold text-slate-800 mb-4 bg-[#E8BCB9] flex items-center h-[100px] p-[10px]">Control de Usuarios</h1>
+<h1 class="text-2xl font-bold text-slate-800 mb-4 bg-[#AE445A] flex items-center h-[100px] p-[10px]">Control de Usuarios</h1>
 
 <!-- Asignaciones -->
-<div id="contenedor-1" class="space-y-6 bg-white shadow-md rounded-2xl p-6 mb-10">
+<div id="contenedor-1" class="space-y-6 bg-white shadow-md rounded-2xl p-6 mb-10 bg-[#48e]">
 
   <h2 class="text-[#432E54] font-semibold text-[24px]">Asignaciones</h2>
 
+  <div class="bg-[#E8BCB9] rounded-[10px] p-[10px]">
   <%= form_with url: dashboard_guardar_asignacion_path, local: true, id: 'asignacion-form', class: "space-y-4" do |f| %>
 
     <!-- Estudiante -->
@@ -33,7 +34,7 @@
       <%= label_tag :curso_id, "Curso", class: "block text-sm font-medium text-slate-700 mb-1" %>
       <%= select_tag :curso_id,
           options_from_collection_for_select(@cursos, :id, :nombre),
-          prompt: "Selecciona un curso",
+          prompt: "Curso",
           class: "w-full rounded-md border border-slate-300 focus:ring-2 focus:ring-blue-400 px-3 py-2 text-sm",
           name: "asignacion[curso_id]" %>
     </div>
@@ -50,6 +51,7 @@
     <%= submit_tag "Guardar",
         class: "bg-[#4B4376] w-[110px] h-[40px] rounded-[10px] text-[#E8BCB9]" %>
   <% end %>
+  </div>
 
   <hr class="border-t border-slate-300 my-4">
 
@@ -89,6 +91,7 @@
   <div class="space-y-4">
     <h3 class="text-[#432E54] font-semibold text-[24px]">Cursos</h3>
 
+    <div class="bg-[#E8BCB9] rounded-[10px] p-[10px]">
     <%= form_with url: dashboard_guardar_curso_path, local: true, id: 'curso-form', class: "space-y-4" do |f| %>
       <div>
         <%= label_tag :nombre, "Nombre del Curso", class: "block text-sm font-medium text-slate-700 mb-1" %>
@@ -109,6 +112,7 @@
       <%= submit_tag "Guardar",
           class: "bg-[#4B4376] w-[110px] h-[40px] rounded-[10px] text-[#E8BCB9]" %>
     <% end %>
+    </div>
 
     <hr class="border-t border-slate-300">
 
@@ -144,6 +148,7 @@
   <div class="space-y-4">
     <h3 class="text-[#432E54] font-semibold text-[24px]">Profesores</h3>
 
+    <div class="bg-[#E8BCB9] rounded-[10px] p-[10px]">
     <%= form_with url: dashboard_guardar_profesor_path, local: true, id: 'profesor-form', class: "space-y-4" do |f| %>
       <div>
         <%= label_tag :nombre, "Nombre del Profesor", class: "block text-sm font-medium text-slate-700 mb-1" %>
@@ -162,6 +167,7 @@
       <%= submit_tag "Guardar",
           class: "bg-[#4B4376] w-[110px] h-[40px] rounded-[10px] text-[#E8BCB9]" %>
     <% end %>
+    </div>
 
     <hr class="border-t border-slate-300">
 
@@ -196,6 +202,9 @@
 <div id="contenedor-3" class="space-y-8 bg-white shadow-md rounded-2xl p-6">
   <h2 class="text-[#432E54] font-semibold text-[24px]">Gestión de Usuarios</h2>
 
+  
+
+  <div class="bg-[#E8BCB9] rounded-[10px] p-[10px]">
   <%= form_with url: dashboard_guardar_usuario_path, local: true, id: 'usuario-form', class: "space-y-4" do |f| %>
     <div>
       <%= label_tag :nombre, "Nombre del Usuario", class: "block text-sm font-medium text-slate-700 mb-1" %>
@@ -223,6 +232,7 @@
     <%= submit_tag "Guardar",
         class: "bg-[#4B4376] w-[110px] h-[40px] rounded-[10px] text-[#E8BCB9]" %>
   <% end %>
+  </div>
 
   <hr class="border-t border-slate-300">
 
