@@ -1,10 +1,10 @@
-<h1 class="bg-[#AE445A] font-bold text-lg sm:text-xl md:text-2xl p-4 sm:p-5 h-24 flex items-center justify-center">
+<h1 class="bg-[#AE445A] font-bold text-lg sm:text-xl md:text-2xl p-4 sm:p-5 h-24 flex items-center justify-center text-[#432E54]">
   Registrar / Actualizar Estudiante
 </h1>
-<div class="lg:grid grid-cols-2">
+<div class="lg:grid lg:grid-cols-2 lg:gap-[30px]">
 
 
-<div class="p-4 sm:p-6 bg-[#E8BCB9] m-[20px] rounded-[10px] w-[50%] col-start-1 row-start-1 mr-auto ml-auto">
+<div class="p-4 sm:p-6 bg-[#E8BCB9] m-[20px] rounded-[10px] lg:w-[50%] col-start-1 row-start-1 mr-auto ml-auto w-[70%]">
   <%= form_with model: (@estudiante || Estudiante.new), url: dashboard_ingresos_path, local: true, id: 'estudiante-form', class: "space-y-4" do |f| %>
     <% if (@estudiante || Estudiante.new).respond_to?(:errors) && (@estudiante || Estudiante.new).errors.any? %>
       <div id="error_explanation" class="bg-red-100 border border-red-400 text-red-700 p-3 rounded">
@@ -16,6 +16,8 @@
         </ul>
       </div>
     <% end %>
+
+    <h2 class="text-lg font-semibold mb-2 text-[#432E54]">Datos del Estudiante</h2>
 
     <p>
       <%= f.text_field :nombre_completo, required: true, placeholder: "Nombre", class: "w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300" %>
@@ -45,8 +47,8 @@
   <% end %>
 </div>
 
-<div id="pago-container" class="p-4 sm:p-6 bg-[#E8BCB9] m-[20px] rounded-[10px] w-[50%] mr-auto ml-auto">
-  <h2 class="text-lg font-semibold mb-2">Registrar Pago</h2>
+<div id="pago-container" class="p-4 sm:p-6 bg-[#E8BCB9] m-[20px] rounded-[10px] lg:w-[50%] mr-auto ml-auto w-[70%]">
+  <h2 class="text-lg font-semibold mb-2 text-[#432E54]">Registrar Pago</h2>
   <!--<p class="mb-4">Estudiante seleccionado: <span id="estudiante-seleccionado" class="font-medium">(ninguno)</span></p>-->
 
   <%= form_with url: dashboard_guardar_pago_path, local: true, class: "space-y-4" do |f| %>
@@ -79,7 +81,7 @@
   <div class="tables-wrapper overflow-x-auto">
     <!-- Tabla de Estudiantes -->
     <div class="table-section mb-6">
-      <h2 class="text-lg font-semibold mb-2">Estudiantes registrados</h2>
+      <h2 class="text-lg font-semibold mb-2 text-[#432E54]">Estudiantes registrados</h2>
       <div class="overflow-y-auto overflow-x-auto h-[300px]">
       <table id="estudiantes-table" class="min-w-full text-sm">
         <thead class="bg-gray-100 text-left">
@@ -113,8 +115,8 @@
   </div>
 </div>
 
-<div class="table-section">
-      <h2 class="text-lg font-semibold mb-2">Pagos registrados</h2>
+<div class="table-section p-[20px]">
+      <h2 class="text-lg font-semibold mb-2 text-[#432E54]">Pagos registrados</h2>
       <div class="overflow-y-auto overflow-x-auto h-[400px]">
       <table id="pagos-table" class="min-w-full border border-gray-200 text-sm">
         <thead class="bg-[#E8BCB9] text-left">

@@ -1,5 +1,5 @@
 <div class="min-h-screen bg-[#E8BCB9] flex flex-col items-center justify-center p-6 sm:p-8">
-<h1 class="text-[30px] font-bold mb-6">Iniciar Sesión</h1>
+<h1 class="text-[30px] font-bold mb-6 text-[#432E54]">Iniciar Sesión</h1>
 
 <%= form_with url: login_path, method: :post, local: true do%>
   <p>
@@ -8,14 +8,14 @@
 
   </p>
 
-  <p class="mt-6">
+  <p class="mt-6 text-[#432E54]">
     <label>Contraseña:</label><br>
     <%= password_field_tag :contraseña %>
   </p>
 
-  <p class="flex justify-center items-center gap-4 mt-10">
+  <p class="flex justify-center items-center gap-4 mt-10 text-[#432E54]">
     <%= submit_tag "Ingresar", class: "bg-[#AE445A] w-[100px] h-[40px] flex justify-center items-center rounded-[10px] lg:w-[200px] lg:h-[50px]" %>
-    <%= link_to "Home", root_path, class: "bg-[#AE445A] w-[100px] h-[40px] flex justify-center items-center rounded-[10px] lg:w-[200px] lg:h-[50px]" %>
+    <%= link_to "Home", root_path, class: "bg-[#AE445A] w-[100px] h-[40px] flex justify-center items-center rounded-[10px] lg:w-[200px] lg:h-[50px] text-bold" %>
   </p>
 <% end %>
 
@@ -33,5 +33,10 @@
   input {
     padding: 5px;
     border-radius: 10px;
+    width: 100%;
+  }
+
+  form {
+    width: 250px;
   }
 </style>

@@ -7,12 +7,14 @@
 <h1 class="text-2xl font-bold text-slate-800 mb-4 bg-[#AE445A] flex items-center h-[100px] p-[10px]">Control de Usuarios</h1>
 
 <!-- Asignaciones -->
-<div id="contenedor-1" class="space-y-6 bg-white shadow-md rounded-2xl p-6 mb-10 bg-[#48e]">
+<div class="lg:grid grid-cols-2">
+<div id="contenedor-1" class="space-y-6 bg-white shadow-md rounded-2xl p-6 mb-10 bg-[#48e] lg:col-span-2 lg:grid lg:grid-cols-2 lg:gap-[25px]">
 
+  
+
+  <div class="p-[10px]">
   <h2 class="text-[#432E54] font-semibold text-[24px]">Asignaciones</h2>
-
-  <div class="bg-[#E8BCB9] rounded-[10px] p-[10px]">
-  <%= form_with url: dashboard_guardar_asignacion_path, local: true, id: 'asignacion-form', class: "space-y-4" do |f| %>
+  <%= form_with url: dashboard_guardar_asignacion_path, local: true, id: 'asignacion-form', class: "space-y-4 bg-[#E8BCB9] rounded-[10px] p-[15px]" do |f| %>
 
     <!-- Estudiante -->
     <div>
@@ -53,11 +55,10 @@
   <% end %>
   </div>
 
-  <hr class="border-t border-slate-300 my-4">
-
-  <h3 class="text-[#432E54] font-semibold text-[24px]">Asignaciones registradas</h3>
+  
   <div class="overflow-x-auto">
-    <table id="asignaciones-table" class="w-[100%]">
+  <h3 class="text-[#432E54] font-semibold text-[24px]">Asignaciones registradas</h3>
+    <table id="asignaciones-table" class="w-[100%] lg:mt-[25px]">
       <thead>
         <tr class="bg-[#E8BCB9]">
           <th class="p-[10px] text-[15px]">Estudiante</th>
@@ -84,15 +85,14 @@
 </div>
 
 <!-- contendor 2 Gestión de Cursos y Profesores -->
-<div id="contenedor-2" class="space-y-8 bg-white shadow-md rounded-2xl p-6 mb-10">
-  <h2 class="text-[#432E54] font-semibold text-[24px]">Gestión de Cursos y Profesores</h2>
+<div id="contenedor-2" class="space-y-8 bg-white shadow-md rounded-2xl p-6 mb-10 lg:col-span-2">
 
   <!-- CURSOS -->
-  <div class="space-y-4">
-    <h3 class="text-[#432E54] font-semibold text-[24px]">Cursos</h3>
+  <div class="space-y-4 lg:grid lg:grid-cols-2 lg:gap-[25px]">
 
-    <div class="bg-[#E8BCB9] rounded-[10px] p-[10px]">
-    <%= form_with url: dashboard_guardar_curso_path, local: true, id: 'curso-form', class: "space-y-4" do |f| %>
+    <div class="">
+    <h3 class="text-[#432E54] font-semibold text-[24px]">Cursos</h3>
+    <%= form_with url: dashboard_guardar_curso_path, local: true, id: 'curso-form', class: "space-y-4 bg-[#E8BCB9] rounded-[10px] p-[15px]" do |f| %>
       <div>
         <%= label_tag :nombre, "Nombre del Curso", class: "block text-sm font-medium text-slate-700 mb-1" %>
         <%= text_field_tag :nombre, nil,
@@ -114,11 +114,11 @@
     <% end %>
     </div>
 
-    <hr class="border-t border-slate-300">
 
-    <h4 class="text-[#432E54] font-semibold text-[24px]">Lista de Cursos</h4>
+    
     <div class="overflow-x-auto">
-      <table id="cursos-table" class="w-[100%]">
+    <h4 class="text-[#432E54] font-semibold text-[24px]">Lista de Cursos</h4>
+      <table id="cursos-table" class="w-[100%] lg:mt-[25px]">
         <thead class="bg-[#E8BCB9]">
           <tr>
             <th class="p-[10px] text-[15px]">Nombre</th>
@@ -142,13 +142,13 @@
     </div>
   </div>
 
-  <hr class="border-t border-slate-300">
 
   <!-- profesores -->
-  <div class="space-y-4">
-    <h3 class="text-[#432E54] font-semibold text-[24px]">Profesores</h3>
+  <div class="space-y-4 lg:grid lg:grid-cols-2 lg:gap-[25px]">
 
-    <div class="bg-[#E8BCB9] rounded-[10px] p-[10px]">
+    <div class="">
+
+    <h3 class="text-[#432E54] font-semibold text-[24px]">Profesores</h3>
     <%= form_with url: dashboard_guardar_profesor_path, local: true, id: 'profesor-form', class: "space-y-4" do |f| %>
       <div>
         <%= label_tag :nombre, "Nombre del Profesor", class: "block text-sm font-medium text-slate-700 mb-1" %>
@@ -169,11 +169,10 @@
     <% end %>
     </div>
 
-    <hr class="border-t border-slate-300">
-
-    <h4 class="text-[#432E54] font-semibold text-[24px]">Lista de Profesores</h4>
+    
     <div class="overflow-x-auto">
-      <table id="profesores-table" class="w-[100%]">
+    <h4 class="text-[#432E54] font-semibold text-[24px]">Lista de Profesores</h4>
+      <table id="profesores-table" class="w-[100%] lg:mt-[25px]">
         <thead>
           <tr class="bg-[#E8BCB9]">
             <th class="p-[10px] text-[15px]">Nombre</th>
@@ -199,13 +198,14 @@
 </div>
 
 <!-- contendor 3 Gestión de Usuarios -->
-<div id="contenedor-3" class="space-y-8 bg-white shadow-md rounded-2xl p-6">
-  <h2 class="text-[#432E54] font-semibold text-[24px]">Gestión de Usuarios</h2>
+<div id="contenedor-3" class="space-y-8 bg-white shadow-md rounded-2xl p-6 lg:col-span-2 lg:grid lg:grid-cols-2 lg:gap-[25px]">
+  
 
   
 
-  <div class="bg-[#E8BCB9] rounded-[10px] p-[10px]">
-  <%= form_with url: dashboard_guardar_usuario_path, local: true, id: 'usuario-form', class: "space-y-4" do |f| %>
+  <div class="">
+  <h2 class="text-[#432E54] font-semibold text-[24px]">Gestión de Usuarios</h2>
+  <%= form_with url: dashboard_guardar_usuario_path, local: true, id: 'usuario-form', class: "space-y-4 bg-[#E8BCB9] rounded-[10px] p-[15px]" do |f| %>
     <div>
       <%= label_tag :nombre, "Nombre del Usuario", class: "block text-sm font-medium text-slate-700 mb-1" %>
       <%= text_field_tag :nombre, nil,
@@ -234,11 +234,11 @@
   <% end %>
   </div>
 
-  <hr class="border-t border-slate-300">
 
-  <h4 class="text-[#432E54] font-semibold text-[24px]">Lista de Usuarios</h4>
+  
   <div class="overflow-x-auto">
-    <table id="usuarios-table" class="">
+  <h4 class="text-[#432E54] font-semibold text-[24px]">Lista de Usuarios</h4>
+    <table id="usuarios-table" class="mr-auto ml-auto lg:mt-[25px]">
       <thead>
         <tr class="bg-[#E8BCB9]"> 
           <th class="p-[10px] text-[15px]">Nombre</th>
@@ -262,6 +262,7 @@
       </tbody>
     </table>
   </div>
+</div>
 </div>
 
 
