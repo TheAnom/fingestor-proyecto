@@ -3,6 +3,7 @@ class DashboardController < ApplicationController
 
   before_action :require_login
   before_action :set_usuario
+  before_action :require_admin, only: [:control_usuarios, :guardar_usuario, :guardar_curso, :guardar_profesor, :guardar_asignacion]
 
   def index
     @estudiantes_count = Estudiante.count
@@ -316,6 +317,12 @@ class DashboardController < ApplicationController
   end
 
   def usuario_params
-    params.require(:usuario).permit(:nombre, :contraseña, :rol_id, :id)
+    params.require(:usuario).permit(:nombre, :password, :rol_id, :id)
+  end
+
+  def require_admin
+    unless current_user && current_user.rol&.nombre == 'administrador'
+      redirect_to dashboard_path, alert: "Acceso no autorizado"
+    end
   end
 end

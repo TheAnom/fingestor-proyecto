@@ -7,3 +7,12 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+
+roles = ["administrador", "suplente", "consultor"]
+roles.each { |r| Rol.find_or_create_by!(nombre: r) }
+
+admin_role = Rol.find_by!(nombre: "administrador")
+Usuario.find_or_create_by!(nombre: "admin") do |u|
+  u.rol = admin_role
+  u.password = "Admin1234"
+end

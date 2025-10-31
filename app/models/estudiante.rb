@@ -4,4 +4,6 @@ class Estudiante < ApplicationRecord
   has_many :pagos, dependent: :destroy
   has_many :asignacion_cursos, dependent: :destroy
   has_many :cursos, through: :asignacion_cursos
+  validates :nombre_completo, presence: true
+  validates :grado, presence: true
 end

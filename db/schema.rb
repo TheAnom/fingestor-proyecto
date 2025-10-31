@@ -10,93 +10,93 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_22_030618) do
+ActiveRecord::Schema[8.1].define(version: 2025_10_31_014000) do
   create_table "asignacion_cursos", force: :cascade do |t|
-    t.integer "estudiante_id", null: false
-    t.integer "curso_id", null: false
-    t.integer "nota"
     t.datetime "created_at", null: false
+    t.integer "curso_id", null: false
+    t.integer "estudiante_id", null: false
+    t.integer "nota"
     t.datetime "updated_at", null: false
     t.index ["curso_id"], name: "index_asignacion_cursos_on_curso_id"
     t.index ["estudiante_id"], name: "index_asignacion_cursos_on_estudiante_id"
   end
 
   create_table "concepto_pagos", force: :cascade do |t|
-    t.text "nombre"
     t.datetime "created_at", null: false
+    t.text "nombre"
     t.datetime "updated_at", null: false
   end
 
   create_table "cursos", force: :cascade do |t|
+    t.datetime "created_at", null: false
     t.text "nombre"
     t.integer "profesor_id", null: false
-    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["profesor_id"], name: "index_cursos_on_profesor_id"
   end
 
   create_table "estudiantes", force: :cascade do |t|
-    t.text "nombre_completo"
-    t.text "telefono"
+    t.datetime "created_at", null: false
     t.integer "grado_id", null: false
     t.text "institucion"
-    t.datetime "created_at", null: false
+    t.text "nombre_completo"
+    t.text "telefono"
     t.datetime "updated_at", null: false
     t.index ["grado_id"], name: "index_estudiantes_on_grado_id"
   end
 
   create_table "grados", force: :cascade do |t|
-    t.text "nombre"
     t.datetime "created_at", null: false
+    t.text "nombre"
     t.datetime "updated_at", null: false
   end
 
   create_table "pagos", force: :cascade do |t|
     t.integer "concepto_pago_id", null: false
-    t.integer "estudiante_id", null: false
-    t.integer "usuario_id", null: false
-    t.float "monto"
-    t.date "fecha"
     t.datetime "created_at", null: false
+    t.integer "estudiante_id", null: false
+    t.date "fecha"
+    t.float "monto"
     t.datetime "updated_at", null: false
+    t.integer "usuario_id", null: false
     t.index ["concepto_pago_id"], name: "index_pagos_on_concepto_pago_id"
     t.index ["estudiante_id"], name: "index_pagos_on_estudiante_id"
     t.index ["usuario_id"], name: "index_pagos_on_usuario_id"
   end
 
   create_table "permiso_rols", force: :cascade do |t|
-    t.integer "rol_id", null: false
-    t.integer "permiso_id", null: false
     t.datetime "created_at", null: false
+    t.integer "permiso_id", null: false
+    t.integer "rol_id", null: false
     t.datetime "updated_at", null: false
     t.index ["permiso_id"], name: "index_permiso_rols_on_permiso_id"
     t.index ["rol_id"], name: "index_permiso_rols_on_rol_id"
   end
 
   create_table "permisos", force: :cascade do |t|
-    t.text "nombre"
     t.datetime "created_at", null: false
+    t.text "nombre"
     t.datetime "updated_at", null: false
   end
 
   create_table "profesors", force: :cascade do |t|
+    t.datetime "created_at", null: false
     t.text "nombre"
     t.text "telefono"
-    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "rols", force: :cascade do |t|
-    t.text "nombre"
     t.datetime "created_at", null: false
+    t.text "nombre"
     t.datetime "updated_at", null: false
   end
 
   create_table "usuarios", force: :cascade do |t|
-    t.text "nombre"
-    t.text "contraseña"
-    t.integer "rol_id", null: false
     t.datetime "created_at", null: false
+    t.text "nombre"
+    t.string "password_digest"
+    t.integer "rol_id", null: false
     t.datetime "updated_at", null: false
     t.index ["rol_id"], name: "index_usuarios_on_rol_id"
   end

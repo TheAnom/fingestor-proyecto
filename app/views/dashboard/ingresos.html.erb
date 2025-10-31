@@ -224,8 +224,11 @@
         // Guardar en variable temporal
         window.selectedEstudianteId = id;
 
-        // Actualizar visual
-        document.getElementById('estudiante-seleccionado').textContent = nombre + ' (id: ' + id + ')';
+        // Actualizar visual (si el elemento existe)
+        const seleccionado = document.getElementById('estudiante-seleccionado');
+        if (seleccionado) {
+          seleccionado.textContent = nombre + ' (id: ' + id + ')';
+        }
 
         // Rellenar el formulario de estudiante (por id)
         const form = document.getElementById('estudiante-form');
@@ -307,8 +310,10 @@
 
               if (window.selectedEstudianteId == estudianteId) {
                 window.selectedEstudianteId = null;
-                document.getElementById('estudiante-seleccionado').textContent = '(ninguno)';
-                document.getElementById('estudiante-form').reset();
+                const seleccionado = document.getElementById('estudiante-seleccionado');
+                if (seleccionado) seleccionado.textContent = '(ninguno)';
+                const formEl = document.getElementById('estudiante-form');
+                if (formEl) formEl.reset();
               }
             } else {
               return res.json().then(function(json){ throw json; });

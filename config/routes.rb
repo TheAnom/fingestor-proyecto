@@ -25,7 +25,7 @@ Rails.application.routes.draw do
   delete "/logout", to: "sessions#destroy"
 
   # Dashboard
-  get "/dashboard", to: "dashboard#index"
+  get "/dashboard", to: "dashboard#index", as: :dashboard
   get "/dashboard/ingresos", to: "dashboard#ingresos"
   get "/dashboard/consultas", to: "dashboard#consultas"
   get "/dashboard/consultas_datos", to: "dashboard#consultas_datos"

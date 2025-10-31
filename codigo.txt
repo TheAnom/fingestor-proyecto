@@ -8,7 +8,7 @@ Rol.create(nombre: "administrador")
 Rol.create(nombre: "suplente")
 Rol.create(nombre: "consultor")
 
-Usuario.create(nombre: "admin", contraseña: "admin", rol_id: 1)
+Usuario.create(nombre: "admin", password: "admin", rol_id: 1)
 
 Grado.create(nombre: "Primero Basico")
 Grado.create(nombre: "Segundo Basico")

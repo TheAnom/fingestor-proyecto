@@ -128,12 +128,12 @@
         </thead>
         <tbody>
           <% @cursos.each do |curso| %>
-            <tr class="hover:bg-slate-50">
+            <tr class="hover:bg-slate-50" data-id="<%= curso.id %>" data-nombre="<%= j curso.nombre %>" data-profesor_id="<%= curso.profesor_id %>">
               <td class="text-[13px]"><%= curso.nombre %></td>
               <td class="text-[13px]"><%= curso.profesor&.nombre %></td>
               <td class="flex flex-col gap-[8px] p-[4px]">
-                <button class="btn-edit-asignacion bg-[#E8BCB9] p-[2px] text-[11px]">Modificar</button>
-                <button class="btn-edit-asignacion bg-[#E8BCB9] p-[2px] text-[11px]">Eliminar</button>
+                <button class="btn-edit-curso bg-[#E8BCB9] p-[2px] text-[11px]">Modificar</button>
+                <button class="btn-delete-curso bg-[#E8BCB9] p-[2px] text-[11px]">Eliminar</button>
               </td>
             </tr>
           <% end %>
@@ -182,7 +182,7 @@
         </thead>
         <tbody>
           <% @profesores.each do |profesor| %>
-            <tr class="hover:bg-slate-50">
+            <tr class="hover:bg-slate-50" data-id="<%= profesor.id %>" data-nombre="<%= j profesor.nombre %>" data-telefono="<%= j profesor.telefono %>">
               <td class="text-[13px]"><%= profesor.nombre %></td>
               <td class="text-[13px]"><%= profesor.telefono %></td>
               <td class="flex flex-col gap-[8px] p-[4px]">
@@ -214,10 +214,10 @@
     </div>
 
     <div>
-      <%= label_tag :contraseña, "Contraseña", class: "block text-sm font-medium text-slate-700 mb-1" %>
-      <%= text_field_tag :contraseña, nil,
+      <%= label_tag :password, "Contrasena", class: "block text-sm font-medium text-slate-700 mb-1" %>
+      <%= password_field_tag :password, nil,
           class: "w-full rounded-md border border-slate-300 focus:ring-2 focus:ring-blue-400 px-3 py-2 text-sm",
-          name: "usuario[contraseña]", placeholder: "Ingrese la contraseña" %>
+          name: "usuario[password]", placeholder: "Ingrese la contraseña" %>
     </div>
 
     <div>
@@ -242,7 +242,7 @@
       <thead>
         <tr class="bg-[#E8BCB9]"> 
           <th class="p-[10px] text-[15px]">Nombre</th>
-          <th class="p-[10px] text-[15px]">Contraseña</th>
+          <th class="p-[10px] text-[15px]">Contrasena</th>
           <th class="p-[10px] text-[15px]">Rol</th>
           <th class="p-[10px] text-[15px]">Acciones</th>
         </tr>
@@ -251,7 +251,7 @@
         <% @usuarios.each do |usuario| %>
           <tr class="hover:bg-slate-50">
             <td class="text-[13px]"><%= usuario.nombre %></td>
-            <td class="text-[13px]"><%= usuario.contraseña %></td>
+            <td class="text-[13px]">••••••</td>
             <td class="text-[13px]"><%= usuario.rol&.nombre %></td>
             <td class="flex flex-col gap-[8px] p-[4px]">
               <button class="btn-edit-usuario bg-[#E8BCB9] p-[2px] text-[11px]">Modificar</button>
@@ -839,7 +839,7 @@
           body: JSON.stringify({
             usuario: {
               nombre: formData.get('usuario[nombre]'),
-              contraseña: formData.get('usuario[contraseña]'),
+              password: formData.get('usuario[password]'),
               rol_id: formData.get('usuario[rol_id]'),
               id: formData.get('usuario[id]')
             }
@@ -855,9 +855,8 @@
               if (row) {
                 row.dataset.nombre = data.usuario.nombre;
                 row.dataset.rol_id = data.usuario.rol_id;
-                const nuevaContrasena = (data.usuario && (data.usuario.contraseña || data.usuario.contrasena)) || formData.get('usuario[contraseña]') || '';
                 row.querySelector('td:nth-child(1)').textContent = data.usuario.nombre;
-                row.querySelector('td:nth-child(2)').textContent = nuevaContrasena;
+                row.querySelector('td:nth-child(2)').textContent = '••••••';
                 row.querySelector('td:nth-child(3)').textContent = data.usuario.rol_nombre;
               }
             } else {
@@ -867,9 +866,8 @@
               tr.dataset.id = data.usuario.id;
               tr.dataset.nombre = data.usuario.nombre;
               tr.dataset.rol_id = data.usuario.rol_id;
-              const nuevaContrasena = (data.usuario && (data.usuario.contraseña || data.usuario.contrasena)) || formData.get('usuario[contraseña]') || '';
               tr.innerHTML = `<td>${data.usuario.nombre}</td>
-                              <td>${nuevaContrasena}</td>
+                              <td>••••••</td>
                               <td>${data.usuario.rol_nombre}</td>
                               <td><button class="btn-edit-usuario" type="button">Modificar</button> <button class="btn-delete-usuario" type="button">Eliminar</button></td>`;
               tbody.appendChild(tr);

@@ -6,12 +6,12 @@ class SessionsController < ApplicationController
     # Busca usuario por nombre
     usuario = Usuario.find_by(nombre: params[:nombre])
 
-    # Valida contraseña (sin cifrado por simplicidad)
-    if usuario && usuario.contraseña == params[:contraseña]
+    # Autentica usando has_secure_password
+    if usuario && usuario.authenticate(params[:password])
       session[:usuario_id] = usuario.id
       redirect_to dashboard_path
     else
-      flash[:alert] = "Nombre o contraseña incorrectos"
+      flash[:alert] = "Nombre o contrasena incorrectos"
       render :new, status: :unprocessable_entity
     end
   end
