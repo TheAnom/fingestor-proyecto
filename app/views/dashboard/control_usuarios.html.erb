@@ -69,7 +69,7 @@
       </thead>
       <tbody>
         <% @asignaciones.each do |a| %>
-          <tr data-id="<%= a.id %>"">
+          <tr data-id="<%= a.id %>" data-estudiante_id="<%= a.estudiante_id %>" data-curso_id="<%= a.curso_id %>" data-nota="<%= a.nota %>">
             <td class="text-[13px]"><%= a.estudiante&.nombre_completo %></td>
             <td class="text-[13px]"><%= a.curso&.nombre %></td>
             <td class="text-[13px]"><%= a.nota %></td>
@@ -149,7 +149,7 @@
     <div class="">
 
     <h3 class="text-[#432E54] font-semibold text-[24px]">Profesores</h3>
-    <%= form_with url: dashboard_guardar_profesor_path, local: true, id: 'profesor-form', class: "space-y-4" do |f| %>
+    <%= form_with url: dashboard_guardar_profesor_path, local: true, id: 'profesor-form', class: "space-y-4 bg-[#E8BCB9] rounded-[10px] p-[15px]" do |f| %>
       <div>
         <%= label_tag :nombre, "Nombre del Profesor", class: "block text-sm font-medium text-slate-700 mb-1" %>
         <%= text_field_tag :nombre, nil,
@@ -249,7 +249,7 @@
       </thead>
       <tbody>
         <% @usuarios.each do |usuario| %>
-          <tr class="hover:bg-slate-50">
+          <tr class="hover:bg-slate-50" data-id="<%= usuario.id %>" data-nombre="<%= j usuario.nombre %>" data-rol_id="<%= usuario.rol_id %>">
             <td class="text-[13px]"><%= usuario.nombre %></td>
             <td class="text-[13px]">••••••</td>
             <td class="text-[13px]"><%= usuario.rol&.nombre %></td>
@@ -846,9 +846,23 @@
           }),
           credentials: 'same-origin'
         })
-        .then(response => response.json())
+        .then(async (response) => {
+          let data;
+          try {
+            data = await response.clone().json();
+          } catch (e) {
+            // No JSON (posible redirección o HTML); generar error genérico
+            if (!response.ok) throw new Error('Error ' + response.status + ': No se pudo crear/actualizar el usuario');
+            return {}; // continuar por si acaso
+          }
+          if (!response.ok) {
+            const msg = (data && data.errors) ? data.errors.join(', ') : 'No se pudo guardar el usuario';
+            throw new Error(msg);
+          }
+          return data;
+        })
         .then(data => {
-          if (data.success) {
+          if (data && data.success) {
             if (usuarioId) {
               // Actualizar fila existente
               const row = document.querySelector(`#usuarios-table tbody tr[data-id="${usuarioId}"]`);
@@ -882,11 +896,12 @@
             if (idField) idField.remove();
             const submitBtn = usuarioForm.querySelector('input[type="submit"]');
             if (submitBtn) submitBtn.value = 'Guardar';
+          } else if (data && data.errors) {
+            alert(data.errors.join(', '));
           }
         })
         .catch(error => {
-          console.error('Error:', error);
-          alert('Error al guardar el usuario');
+          alert(error.message || 'Error al guardar el usuario');
         });
       });
     }
