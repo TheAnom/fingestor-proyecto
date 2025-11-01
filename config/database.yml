@@ -20,9 +20,10 @@ test:
   <<: *default
   database: storage/test.sqlite3
 
-
 # Store production database in the storage/ directory, which by default
 # is mounted as a persistent Docker volume in config/deploy.yml.
 production:
-  url: <%= ENV["DATABASE_URL"] %>
+  adapter: postgresql
+  encoding: unicode
+  url: <%= ENV["DATABASE_URL"] || (ENV["PGHOST"] && ENV["PGUSER"] && ENV["PGDATABASE"] ? "postgresql://#{ENV['PGUSER']}:#{ENV['PGPASSWORD']}@#{ENV['PGHOST']}:#{ENV['PGPORT'] || 5432}/#{ENV['PGDATABASE']}?sslmode=require" : nil) %>
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
