@@ -137,8 +137,7 @@
     </div>
     </div>
     <div class="mt-4 flex items-center gap-2">
-      <a id="btn-estado-cuenta-csv" href="#" class="hidden bg-[#4B4376] text-white px-3 py-2 rounded" target="_blank">Descargar Estado de Cuenta (CSV)</a>
-      <a id="btn-estado-cuenta-pdf" href="#" class="hidden bg-[#432E54] text-white px-3 py-2 rounded" target="_blank">Descargar Estado de Cuenta (PDF)</a>
+      <a id="btn-estado-cuenta-open" href="#" class="hidden bg-[#432E54] text-white px-3 py-2 rounded">Descargar Estado de Cuenta (HTML)</a>
     </div>
   </div>
 </div>
@@ -227,15 +226,12 @@
             setIndicador(data.solvente);
             rellenarExamenes(data.examenes);
             rellenarAsignaciones(data.asignaciones, data.promedio);
-            // Actualizar botones de exportación de estado de cuenta
-            const btnCsv = document.getElementById('btn-estado-cuenta-csv');
-            const btnPdf = document.getElementById('btn-estado-cuenta-pdf');
-            if (btnCsv && btnPdf) {
-              const base = `/reportes/estado_cuenta?estudiante_id=${encodeURIComponent(data.estudiante.id)}`;
-              btnCsv.href = `${base}&format=csv`;
-              btnPdf.href = `${base}&format=pdf`;
-              btnCsv.classList.remove('hidden');
-              btnPdf.classList.remove('hidden');
+            // Actualizar botón de descarga de estado de cuenta (HTML)
+            const btnOpen = document.getElementById('btn-estado-cuenta-open');
+            if (btnOpen) {
+              const url = `/reportes/estado_cuenta?estudiante_id=${encodeURIComponent(data.estudiante.id)}&download=1`;
+              btnOpen.href = url;
+              btnOpen.classList.remove('hidden');
             }
           }
         })

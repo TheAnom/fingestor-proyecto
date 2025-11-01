@@ -64,8 +64,7 @@ body{
       <p class="text-sm text-gray-500">Periodo: <%= desde %> a <%= hasta %></p>
     </div>
     <div class="space-x-2">
-      <a class="bg-[#4B4376] text-white px-3 py-2 rounded" href="<%= reportes_mensual_path(format: :csv, desde: desde, hasta: hasta) %>">Descargar CSV</a>
-      <a class="bg-[#432E54] text-white px-3 py-2 rounded" href="<%= reportes_mensual_path(format: :pdf, desde: desde, hasta: hasta) %>">Descargar PDF</a>
+      <a class="bg-[#432E54] text-white px-3 py-2 rounded" href="<%= reportes_mensual_path(desde: desde, hasta: hasta, download: 1) %>">Descargar reporte (HTML)</a>
     </div>
   </div>
 </div>
