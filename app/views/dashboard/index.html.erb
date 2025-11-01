@@ -54,3 +54,18 @@ body{
     <div class="mt-2 text-3xl font-bold text-gray-900 text-[#432E54]"><%= number_to_currency(@ingresos_total, unit: 'Q', precision: 2) %></div>
   </div>
 </div>
+
+<div class="bg-[#E8BCB9] lg:pl-[180px] lg:pr-[180px] p-[20px]">
+  <% desde = Date.current.beginning_of_month %>
+  <% hasta = Date.current.end_of_month %>
+  <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm flex items-center justify-between">
+    <div>
+      <h3 class="text-sm font-medium text-[#432E54]">Reporte mensual</h3>
+      <p class="text-sm text-gray-500">Periodo: <%= desde %> a <%= hasta %></p>
+    </div>
+    <div class="space-x-2">
+      <a class="bg-[#4B4376] text-white px-3 py-2 rounded" href="<%= reportes_mensual_path(format: :csv, desde: desde, hasta: hasta) %>">Descargar CSV</a>
+      <a class="bg-[#432E54] text-white px-3 py-2 rounded" href="<%= reportes_mensual_path(format: :pdf, desde: desde, hasta: hasta) %>">Descargar PDF</a>
+    </div>
+  </div>
+</div>

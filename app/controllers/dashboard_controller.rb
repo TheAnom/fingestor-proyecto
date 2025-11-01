@@ -127,14 +127,11 @@ class DashboardController < ApplicationController
     hoy = Date.current
     meses_labels = [nil, 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
     mes_actual_label = meses_labels[hoy.month]
-    # Solo se consideran Enero..Noviembre como columnas; si es Diciembre, considerar solvente por defecto salvo que se requiera otra regla
+    # Solo se consideran Enero..Noviembre como columnas; si el mes actual no está en conceptos, no se requiere pago mensual
     requiere_mes = conceptos.include?(mes_actual_label)
     pagado_mes_actual = requiere_mes ? pagos_hash[mes_actual_label].present? : true
-    solvente = if hoy.day > 5
-      pagado_mes_actual
-    else
-      true
-    end
+    # Regla: Solvente únicamente si tiene pagado el mes presente hasta la fecha
+    solvente = pagado_mes_actual
 
     # Solvencia exámenes / papelería
     exam_labels = ['Papeleria', 'Examen uno', 'Examen dos', 'Examen tres', 'Examen cuatro']
@@ -321,8 +318,6 @@ class DashboardController < ApplicationController
   end
 
   def require_admin
-    unless current_user && current_user.rol&.nombre == 'administrador'
-      redirect_to dashboard_path, alert: "Acceso no autorizado"
-    end
+    require_role('administrador')
   end
 end

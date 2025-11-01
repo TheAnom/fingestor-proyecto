@@ -1,5 +1,6 @@
 class PagosController < ApplicationController
   before_action :require_login
+  before_action -> { require_role('administrador', 'suplente') }, only: [:update, :destroy]
   before_action :set_pago, only: [:update, :destroy]
 
   def update

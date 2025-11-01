@@ -1,0 +1,22 @@
+<h1 class="text-xl font-bold">Estado de cuenta</h1>
+<p>Estudiante: <%= @estudiante&.nombre_completo %> (ID: <%= @estudiante&.id %>)</p>
+<p>Total pagado: <%= number_to_currency(@total_pagado) %></p>
+
+<table class="min-w-full mt-4 border">
+  <thead>
+    <tr>
+      <th class="border px-2 py-1">Fecha</th>
+      <th class="border px-2 py-1">Concepto</th>
+      <th class="border px-2 py-1">Monto</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @pagos.each do |p| %>
+      <tr>
+        <td class="border px-2 py-1"><%= p.fecha %></td>
+        <td class="border px-2 py-1"><%= p.concepto_pago&.nombre %></td>
+        <td class="border px-2 py-1 text-right"><%= number_to_currency(p.monto) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

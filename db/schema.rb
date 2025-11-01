@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_10_31_014000) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_01_011500) do
   create_table "asignacion_cursos", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "curso_id", null: false
@@ -18,6 +18,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_31_014000) do
     t.integer "nota"
     t.datetime "updated_at", null: false
     t.index ["curso_id"], name: "index_asignacion_cursos_on_curso_id"
+    t.index ["estudiante_id", "curso_id"], name: "index_asignacion_unico_estudiante_curso", unique: true
     t.index ["estudiante_id"], name: "index_asignacion_cursos_on_estudiante_id"
   end
 
@@ -93,11 +94,13 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_31_014000) do
   end
 
   create_table "usuarios", force: :cascade do |t|
+    t.string "api_token"
     t.datetime "created_at", null: false
     t.text "nombre"
     t.string "password_digest"
     t.integer "rol_id", null: false
     t.datetime "updated_at", null: false
+    t.index ["api_token"], name: "index_usuarios_on_api_token", unique: true
     t.index ["rol_id"], name: "index_usuarios_on_rol_id"
   end
 

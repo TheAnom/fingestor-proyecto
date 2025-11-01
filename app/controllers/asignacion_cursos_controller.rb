@@ -1,4 +1,5 @@
 class AsignacionCursosController < ApplicationController
+  before_action -> { require_role('administrador', 'consultor') }
   before_action :set_asignacion, only: [:show, :update, :destroy]
 
   def show

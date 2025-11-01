@@ -1,0 +1,44 @@
+<h1 class="text-xl font-bold">Reporte mensual de pagos</h1>
+<p>Periodo: <%= @desde %> a <%= @hasta %></p>
+<p>Total: <%= number_to_currency(@total) %></p>
+
+<table class="min-w-full mt-4 border">
+  <thead>
+    <tr>
+      <th class="border px-2 py-1">Fecha</th>
+      <th class="border px-2 py-1">Concepto</th>
+      <th class="border px-2 py-1">Estudiante</th>
+      <th class="border px-2 py-1">Usuario</th>
+      <th class="border px-2 py-1">Monto</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @pagos.each do |p| %>
+      <tr>
+        <td class="border px-2 py-1"><%= p.fecha %></td>
+        <td class="border px-2 py-1"><%= p.concepto_pago&.nombre %></td>
+        <td class="border px-2 py-1"><%= p.estudiante&.nombre_completo %></td>
+        <td class="border px-2 py-1"><%= p.usuario&.nombre %></td>
+        <td class="border px-2 py-1 text-right"><%= number_to_currency(p.monto) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<h2 class="text-lg font-semibold mt-6">Totales por concepto</h2>
+<table class="min-w-full mt-2 border">
+  <thead>
+    <tr>
+      <th class="border px-2 py-1">Concepto</th>
+      <th class="border px-2 py-1">Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @por_concepto.each do |concepto, total| %>
+      <tr>
+        <td class="border px-2 py-1"><%= concepto %></td>
+        <td class="border px-2 py-1 text-right"><%= number_to_currency(total) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

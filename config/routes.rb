@@ -16,6 +16,15 @@ Rails.application.routes.draw do
   resources :cursos, only: [:update, :destroy]
   resources :profesores, only: [:update, :destroy]
   resources :usuarios, only: [:update, :destroy]
+  # Reportes
+  get "reportes/mensual", to: "reportes#mensual", as: :reportes_mensual
+  get "reportes/estado_cuenta", to: "reportes#estado_cuenta", as: :reportes_estado_cuenta
+  namespace :api do
+    namespace :v1 do
+      resources :estudiantes, only: [:index, :show]
+      resources :pagos, only: [:index]
+    end
+  end
   
   root "home#index"
 
