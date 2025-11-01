@@ -22,16 +22,32 @@ class ReportesController < ApplicationController
     @total = total
     @por_concepto = por_concepto
 
-    # Descargar como HTML si se solicita
-    if params[:download].present?
-      html = render_to_string(template: 'reportes/mensual', formats: [:html], layout: false)
-      return send_data html, filename: "reporte_mensual_#{desde}_#{hasta}.html", type: 'text/html', disposition: 'attachment'
-    end
-
     respond_to do |format|
       format.html { render :mensual }
       format.json do
         render json: { desde: desde, hasta: hasta, total: total, por_concepto: por_concepto, pagos: pagos.as_json(only: [:id, :monto, :fecha], methods: [], include: { concepto_pago: { only: [:id, :nombre] }, estudiante: { only: [:id, :nombre_completo] }, usuario: { only: [:id, :nombre] } }) }
+      end
+      format.pdf do
+        require 'prawn'
+        pdf = Prawn::Document.new
+        pdf.text "Reporte mensual de pagos", size: 16, style: :bold
+        pdf.move_down 8
+        pdf.text "Periodo: #{desde} a #{hasta}"
+        pdf.move_down 10
+        pdf.text "Fecha | Concepto | Estudiante | Usuario | Monto", style: :bold
+        pdf.move_down 4
+        @pagos.each do |p|
+          pdf.text [
+            p.fecha.to_s,
+            (p.concepto_pago&.nombre.to_s),
+            (p.estudiante&.nombre_completo.to_s),
+            (p.usuario&.nombre.to_s),
+            sprintf('%.2f', p.monto.to_f)
+          ].join(' | ')
+        end
+        pdf.move_down 8
+        pdf.text "TOTAL: #{sprintf('%.2f', @total.to_f)}", style: :bold
+        send_data pdf.render, filename: "reporte_mensual_#{desde}_#{hasta}.pdf", type: 'application/pdf', disposition: 'attachment'
       end
       format.any { render :mensual, formats: :html }
     end
@@ -54,16 +70,30 @@ class ReportesController < ApplicationController
     @total_pagado = total_pagado
     @por_concepto = por_concepto
 
-    # Descargar como HTML si se solicita
-    if params[:download].present?
-      html = render_to_string(template: 'reportes/estado_cuenta', formats: [:html], layout: false)
-      return send_data html, filename: "estado_cuenta_#{estudiante.id}.html", type: 'text/html', disposition: 'attachment'
-    end
-
     respond_to do |format|
       format.html { render :estado_cuenta }
       format.json do
         render json: { estudiante: { id: estudiante.id, nombre_completo: estudiante.nombre_completo }, total_pagado: total_pagado, por_concepto: por_concepto, pagos: pagos.as_json(only: [:id, :monto, :fecha], include: { concepto_pago: { only: [:id, :nombre] } }) }
+      end
+      format.pdf do
+        require 'prawn'
+        pdf = Prawn::Document.new
+        pdf.text "Estado de cuenta", size: 16, style: :bold
+        pdf.move_down 8
+        pdf.text "Estudiante: #{@estudiante.nombre_completo} (##{@estudiante.id})"
+        pdf.move_down 10
+        pdf.text "Fecha | Concepto | Monto", style: :bold
+        pdf.move_down 4
+        @pagos.each do |p|
+          pdf.text [
+            p.fecha.to_s,
+            (p.concepto_pago&.nombre.to_s),
+            sprintf('%.2f', p.monto.to_f)
+          ].join(' | ')
+        end
+        pdf.move_down 8
+        pdf.text "TOTAL: #{sprintf('%.2f', @total_pagado.to_f)}", style: :bold
+        send_data pdf.render, filename: "estado_cuenta_#{@estudiante.id}.pdf", type: 'application/pdf', disposition: 'attachment'
       end
       format.any { render :estado_cuenta, formats: :html }
     end

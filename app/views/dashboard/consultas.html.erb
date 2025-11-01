@@ -137,7 +137,7 @@
     </div>
     </div>
     <div class="mt-4 flex items-center gap-2">
-      <a id="btn-estado-cuenta-open" href="#" class="hidden bg-[#432E54] text-white px-3 py-2 rounded">Descargar Estado de Cuenta (HTML)</a>
+      <a id="btn-estado-cuenta-open" href="#" class="hidden bg-[#432E54] text-white px-3 py-2 rounded">Descargar Estado de Cuenta (PDF)</a>
     </div>
   </div>
 </div>
@@ -226,10 +226,10 @@
             setIndicador(data.solvente);
             rellenarExamenes(data.examenes);
             rellenarAsignaciones(data.asignaciones, data.promedio);
-            // Actualizar botón de descarga de estado de cuenta (HTML)
+            // Actualizar botón de descarga de estado de cuenta (PDF)
             const btnOpen = document.getElementById('btn-estado-cuenta-open');
             if (btnOpen) {
-              const url = `/reportes/estado_cuenta?estudiante_id=${encodeURIComponent(data.estudiante.id)}&download=1`;
+              const url = `/reportes/estado_cuenta?estudiante_id=${encodeURIComponent(data.estudiante.id)}&format=pdf`;
               btnOpen.href = url;
               btnOpen.classList.remove('hidden');
             }
